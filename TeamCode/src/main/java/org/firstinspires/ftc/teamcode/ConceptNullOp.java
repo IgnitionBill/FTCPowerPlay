@@ -51,6 +51,7 @@ public class ConceptNullOp extends OpMode {
     telemetry.addData("Status", "Initialized");
     Context appContext = hardwareMap.appContext;
     TestJNIWrapper testJNI = new TestJNIWrapper(appContext);
+    CameraWrapper testCameraJNI = new CameraWrapper(appContext);
 
   }
 

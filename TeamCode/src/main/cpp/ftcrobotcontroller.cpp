@@ -26,3 +26,9 @@ Java_org_firstinspires_ftc_teamcode_TestJNIWrapper_stringFromJNI(JNIEnv *env, jo
         return env->NewStringUTF(hello.c_str());
     }
 }
+extern "C"
+JNIEXPORT jstring JNICALL
+Java_org_firstinspires_ftc_teamcode_CameraWrapper_cameraStringFromJNI(JNIEnv *env, jobject thiz) {
+    std::string hello = "Hello from Camera C++";
+    return env->NewStringUTF(hello.c_str());
+}
