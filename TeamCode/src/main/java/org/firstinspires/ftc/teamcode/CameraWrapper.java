@@ -16,29 +16,30 @@ public class CameraWrapper {
 
     public CameraWrapper(Context applicationContext) {
 
-        Log.e("TestCameraWrapper", cameraStringFromJNI());
+        Log.e("CameraWrapper", cameraStringFromJNI());
 
         //RsContext.init must be called once in the application's lifetime before any interaction with physical RealSense devices.
         //For multi activities applications use the application context instead of the activity context
         RsContext.init(applicationContext);
-        Log.e("TestCameraWrapper", "Initialized RxContext");
+        Log.e("CameraWrapper", "Initialized RxContext");
 
         //Register to notifications regarding RealSense devices attach/detach events via the DeviceListener.
         mRsContext = new RsContext();
         mRsContext.setDevicesChangedCallback(new DeviceListener() {
             @Override
             public void onDeviceAttach() {
+                Log.e("CameraWrapper", "Device is attached"); // this message does not display
                 printMessage();
-                Log.e("TestCameraWrapper", "Device is attached");
             }
 
             @Override
             public void onDeviceDetach() {
+                Log.e("CameraWrapper", "Device is detached");
                 printMessage();
-                Log.e("TestCameraWrapper", "Device is detached");
             }
         });
-        Log.e("TestCameraWrapper", "Outside of device listener callback.");
+        Log.e("CameraWrapper", "Outside of device listener callback.");
+        testMulticamFromJNI();
         printMessage();
     }
 
@@ -50,9 +51,9 @@ public class CameraWrapper {
         if(cameraCount == 0)
             cameraCountString = "No cameras are currently connected.";
         else
-            cameraCountString = "Camera is connected";
+            cameraCountString = "Camera is connected " + cameraCount;
 
-        Log.e("TestCameraWrapper", "This app use librealsense: " + version + "\n" + cameraCountString);
+        Log.e("CameraWrapper", "This app use librealsense: " + version + "\n" + cameraCountString);
 //        runOnUiThread(new Runnable() {
 //            @Override
 //            public void run() {
@@ -72,4 +73,6 @@ public class CameraWrapper {
     private static native String nGetLibrealsenseVersionFromJNI();
 
     private static native int nGetCamerasCountFromJNI();
+
+    private native void testMulticamFromJNI();
 }
