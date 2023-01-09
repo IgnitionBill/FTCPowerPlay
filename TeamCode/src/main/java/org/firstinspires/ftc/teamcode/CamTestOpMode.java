@@ -39,9 +39,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 /**
  * Demonstrates empty OpMode
  */
-@TeleOp(name = "Concept: NullOp", group = "Concept")
+@TeleOp(name = "CamTest-a", group = "Concept")
 //@Disabled
-public class ConceptNullOp extends OpMode {
+public class CamTest extends OpMode {
 
   private ElapsedTime runtime = new ElapsedTime();
 
