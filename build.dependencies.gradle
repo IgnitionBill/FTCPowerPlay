@@ -20,3 +20,37 @@ dependencies {
     implementation 'org.firstinspires.ftc:gameAssets-PowerPlay:1.0.0'
 }
 
+//The lines below add librealsense to the application's dependencies
+repositories {
+    maven{
+        url "https://egiintel.jfrog.io/artifactory/librealsense"
+    }
+}
+
+configurations {
+    downloadHeader
+    downloadSo
+}
+
+dependencies {
+    def version = '2.50.0'
+    downloadSo 'com.intel.realsense:librealsense:' + version + '@aar'
+    implementation 'com.intel.realsense:librealsense:' + version + '@aar'
+    downloadHeader 'com.intel.realsense:librealsense:' + version + '@zip'
+}
+
+task extractHeaders(type: Sync) {
+    dependsOn configurations.downloadHeader
+    from { configurations.downloadHeader.collect { zipTree(it) } }
+    into "$projectDir/src/main/cpp/include"
+}
+
+task extractSo(type: Sync) {
+    dependsOn configurations.downloadSo
+    from { configurations.downloadSo.collect { zipTree(it) } }
+    include("jni/**")
+    into "$buildDir/"
+}
+
+preBuild.dependsOn(extractHeaders)
+preBuild.dependsOn(extractSo)

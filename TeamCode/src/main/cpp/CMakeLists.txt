@@ -15,15 +15,17 @@ project("ftcrobotcontroller")
 # You can define multiple libraries, and CMake builds them for you.
 # Gradle automatically packages shared libraries with your APK.
 
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/src/main/cpp/include")
+
 add_library( # Sets the name of the library.
-             ftcrobotcontroller
+        ftcrobotcontroller
 
-             # Sets the library as a shared library.
-             SHARED
+        # Sets the library as a shared library.
+        SHARED
 
-             # Provides a relative path to your source file(s).
-             ftcrobotcontroller.cpp )
-
+        # Provides a relative path to your source file(s).
+        ftcrobotcontroller.cpp)
+add_library(realsense2 SHARED IMPORTED)
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because CMake includes system libraries in the search path by
 # default, you only need to specify the name of the public NDK library
@@ -31,19 +33,28 @@ add_library( # Sets the name of the library.
 # completing its build.
 
 find_library( # Sets the name of the path variable.
-              log-lib
+        log-lib
 
-              # Specifies the name of the NDK library that
-              # you want CMake to locate.
-              log )
+        # Specifies the name of the NDK library that
+        # you want CMake to locate.
+        log)
+
+set_target_properties(
+        realsense2
+        PROPERTIES
+        IMPORTED_LOCATION
+        ${CMAKE_CURRENT_SOURCE_DIR}/build/jni/${ANDROID_ABI}/librealsense2.so
+)
 
 # Specifies libraries CMake should link to your target library. You
 # can link multiple libraries, such as libraries you define in this
 # build script, prebuilt third-party libraries, or system libraries.
 
 target_link_libraries( # Specifies the target library.
-                       ftcrobotcontroller
+        ftcrobotcontroller
 
-                       # Links the target library to the log library
-                       # included in the NDK.
-                       ${log-lib} )
+        # Links the target library to the log library
+        # included in the NDK.
+        ${log-lib}
+        realsense2)
+
