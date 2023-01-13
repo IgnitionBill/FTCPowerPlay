@@ -1,7 +1,9 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.system;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import java.util.concurrent.TimeUnit;
 
@@ -35,6 +37,7 @@ public class GamePadState {
     private long timeLimit = 500l;
 
     private ElapsedTime runtime = new ElapsedTime();
+    private Telemetry telemetry;
 
     Gamepad.RumbleEffect customRumbleEffect;
 
@@ -48,7 +51,11 @@ public class GamePadState {
                 .build();
     }
 
-    public void update(Gamepad gamepad){
+    public void  initialize(Telemetry telemetry) {
+        this.telemetry = telemetry;
+    }
+
+    public void update(Gamepad gamepad, boolean verbose){
         leftStickX = gamepad.left_stick_x;
         leftStickY = gamepad.left_stick_y;
         rightStickX = gamepad.right_stick_x;
@@ -90,6 +97,17 @@ public class GamePadState {
                 altMode = true;
                 //customRumbleEffect
             }
+        }
+
+        if (verbose) {
+            telemetry.addData("a: ", a);
+            telemetry.addData("b: ", b);
+            telemetry.addData("x: ", x);
+            telemetry.addData("y: ", y);
+            telemetry.addData("dPadUp: ", dPadUp);
+            telemetry.addData("dPadDown: ", dPadDown);
+            telemetry.addData("dPadRight: ", dPadRight);
+            telemetry.addData("dPadLeft: ", dPadLeft);
         }
     }
 

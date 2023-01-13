@@ -1,4 +1,6 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.system;
+
+import android.util.Log;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -6,7 +8,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.util.JointController;
+import org.firstinspires.ftc.teamcode.drivetrain.MotorController;
+import org.firstinspires.ftc.teamcode.arm.ArmController;
+import org.firstinspires.ftc.teamcode.arm.JointController;
 import org.firstinspires.ftc.teamcode.util.UtilityKit;
 
 public class Actuators {
@@ -26,6 +30,7 @@ public class Actuators {
 
     // Declare servo control for arm
     public Servo grabberServo;
+    public Servo grabberServo2;
     public Servo grabberRotationServo;
     public Servo grabberBendServo;
 
@@ -59,13 +64,15 @@ public class Actuators {
         }
         catch (Exception armInitException) {
             System.out.println("Arm dc motors failed to initialize");
+            Log.e("Actuators", "Arm dc motors failed to initialize");
         }
 
         try {
             // Initialize arm servo motors
-            grabberServo = hardwareMap.get(Servo.class, "grabberServo");
-            grabberRotationServo = hardwareMap.get(Servo.class, "grabberRotationServo");
-            grabberBendServo = hardwareMap.get(Servo.class, "grabberBendServo");
+            grabberServo = hardwareMap.get(Servo.class, "pincerA");
+            grabberServo2 = hardwareMap.get(Servo.class, "pincerB");
+            grabberRotationServo = hardwareMap.get(Servo.class, "rotate");
+            grabberBendServo = hardwareMap.get(Servo.class, "pitch");
 
         }
         catch (Exception servoInitException) {
@@ -99,7 +106,13 @@ public class Actuators {
         backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    public void updateArm(Sensors sensors, double grabberBend, double grabberRotation, int turnTicks, int lowerTicks, int baseTicks) {
+    public void updateArm(ArmController armController, Sensors sensors) {
+        double grabberBend = armController.grabberBend;
+        double grabberRotation = armController.grabberRotation;
+        int turnTicks = armController.turnTableTicks;
+        int lowerTicks = armController.lowerTicks;
+        int baseTicks = armController.baseTicks;
+
         // GoBilda 2000-0025-0002 300 degree max rotation
         grabberRotation = UtilityKit.limitToRange(grabberRotation, -120, 120);
         grabberBend = UtilityKit.limitToRange(grabberBend, -120, 120);
@@ -108,28 +121,35 @@ public class Actuators {
 
         //TODO: Create our own (smarter) run to position control system
 
-        turnTable.setPower(1);
-        baseSegment.setPower(1);
-        baseSegment2.setPower(1);
-        lowerSegment.setPower(1);
+        turnTable.setTarget(turnTicks);
+        baseSegment.setTarget(baseTicks);
+        baseSegment2.setTarget(baseTicks);
+        lowerSegment.setTarget(lowerTicks);
+
+        turnTable.setPower(1.0);
+        baseSegment.setPower(1.0);
+        baseSegment2.setPower(1.0);
+        lowerSegment.setPower(1.0);
 
         turnTable.setVelocity(UtilityKit.ticksPerDegreeAtJoint*30);
         baseSegment.setVelocity(UtilityKit.ticksPerDegreeAtJoint*30);
         baseSegment2.setVelocity(UtilityKit.ticksPerDegreeAtJoint*30);
         lowerSegment.setVelocity(UtilityKit.ticksPerDegreeAtJoint*30);
 
-        turnTable.setTarget(turnTicks);
-        baseSegment.setTarget(baseTicks);
-        baseSegment2.setTarget(baseTicks);
-        lowerSegment.setTarget(lowerTicks);
+        turnTable.setMode();
+        baseSegment.setMode();
+        baseSegment2.setMode();
+        lowerSegment.setMode();
     }
 
     public void updateServos(MotorController motorController) {
         if (motorController.grabberRelease) {
             grabberServo.setPosition(1);
+            grabberServo2.setPosition(-1);
         }
         else {
-            grabberServo.setPosition(0);
+            grabberServo.setPosition(-1);
+            grabberServo2.setPosition(1);
         }
     }
 }

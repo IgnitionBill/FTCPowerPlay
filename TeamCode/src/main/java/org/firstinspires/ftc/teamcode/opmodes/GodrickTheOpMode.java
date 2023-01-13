@@ -1,12 +1,26 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.opmodes;
+
+import android.content.Context;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp(name="GodrickTheDriver", group = "FullOpMode")
+import org.firstinspires.ftc.teamcode.CameraWrapper;
+import org.firstinspires.ftc.teamcode.system.Actuators;
+import org.firstinspires.ftc.teamcode.system.GamePadState;
+import org.firstinspires.ftc.teamcode.drivetrain.MotorController;
+import org.firstinspires.ftc.teamcode.system.SafetyMonitor;
+import org.firstinspires.ftc.teamcode.system.Sensors;
+import org.firstinspires.ftc.teamcode.arm.ArmController;
+import org.firstinspires.ftc.teamcode.arm.DefinedArmPositions;
+import org.firstinspires.ftc.teamcode.arm.DefinedMotionSequences;
 
-public class GodrickTheDriver extends LinearOpMode {
+@TeleOp(name="GodrickTheOpMode", group = "FullOpMode")
+
+public class GodrickTheOpMode extends LinearOpMode {
+
+    //TODO: Cleanup
 
     // Create general variables
     private ElapsedTime runtime = new ElapsedTime();
@@ -15,8 +29,10 @@ public class GodrickTheDriver extends LinearOpMode {
     private GamePadState gamePadState = new GamePadState();
     private Actuators actuators = new Actuators();
     private Sensors sensors = new Sensors();
-    //private SafetyMonitor safetyMonitor = new SafetyMonitor();
-    //private ArmController armController = new ArmController();
+    private SafetyMonitor safetyMonitor = new SafetyMonitor();
+    private ArmController armController = new ArmController();
+    private DefinedArmPositions definedArmPositions = new DefinedArmPositions();
+    private DefinedMotionSequences definedMotionSequences = new DefinedMotionSequences();
 
     // Create references to control classes
     private MotorController motorController = new MotorController();
@@ -33,7 +49,9 @@ public class GodrickTheDriver extends LinearOpMode {
         actuators.initializeGodrick(hardwareMap, telemetry);
         sensors.initialize(hardwareMap, telemetry);
         motorController.initialize(telemetry);
-        //armController.initialize(telemetry);
+        armController.initialize(sensors, telemetry);
+        definedMotionSequences.init(definedArmPositions);
+        gamePadState.initialize(telemetry);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -47,21 +65,22 @@ public class GodrickTheDriver extends LinearOpMode {
         while (opModeIsActive()) {
             telemetry.addData("Alt mode:", gamePadState.altMode);
             // store the latest gamepad state
-            gamePadState.update(gamepad1);
+            gamePadState.update(gamepad1, false);
             // update the sensors with data from the actuators
             sensors.update(actuators, true);
-            // update safety monitor
-            //safetyMonitor.safetyCheck(motorController, sensors);
 
             // update the motor controller state, to make the motors move
-            motorController.simpleMechanumUpdate(gamePadState, sensors, true);
-            //motorController.servoUpdate(gamePadState);
-            //armController.updateArm(gamePadState, actuators, sensors, true);
-            //motorController.godrickArmUpdate(gamePadState, sensors, safetyMonitor, true);
+            motorController.simpleMechanumUpdate(gamePadState, sensors, false);
 
-            //actuators.updateArm(motorController);
+            // Calculate the next move for the servo motors
+            motorController.servoUpdate(gamePadState);
+
+            //Calculate the next move for the DC motors
+            armController.updateArm(gamePadState, actuators, sensors, true);
+
             actuators.updateDrivetrainMotors(motorController);
-            //actuators.updateServos(motorController);
+            actuators.updateServos(motorController);
+            actuators.updateArm(armController, sensors);
 
             // display all telemetry updates to the controller, use verbose=true to see reports in telemetry
             telemetry.update();

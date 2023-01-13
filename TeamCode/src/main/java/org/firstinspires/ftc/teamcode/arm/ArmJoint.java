@@ -1,12 +1,18 @@
-package org.firstinspires.ftc.teamcode.util;
+package org.firstinspires.ftc.teamcode.arm;
+
+import org.firstinspires.ftc.teamcode.util.UnitOfAngle;
+import org.firstinspires.ftc.teamcode.util.UnitOfDistance;
+import org.firstinspires.ftc.teamcode.util.UtilityKit;
+import org.firstinspires.ftc.teamcode.util.Vector2D;
 
 public class ArmJoint {
     public String jointName;
     private final UnitOfAngle unitOfAngle;
-    private final ArmReference referenceA;
+    private final ArmReference referenceA; // Direction A
     private final double angleLimitA;
-    private final ArmReference referenceB;
+    private final ArmReference referenceB; // Direction B
     private final double angleLimitB;
+    private final double fullArc;
     private final UnitOfDistance unitOfDistance;
     private final Vector2D nextPoint = new Vector2D(); // Coordinates for the end of the segment
     private final double angleToNext;
@@ -18,22 +24,31 @@ public class ArmJoint {
     private double oldSpeed;
     private double deltaSpeed;
 
-    public double angleOffset; // Should be set to the default position
+    public double angleOffset = 0; // Should be set to the default position
 
 
-    public ArmJoint(String jointName, UnitOfAngle unitOfAngle, double angleA, ArmReference referenceA, double angleB, ArmReference referenceB, double angleOffset, double x, double y, UnitOfDistance unitOfDistance) {
+    public ArmJoint(String jointName, UnitOfAngle unitOfAngle, double angleA, ArmReference referenceA, double angleB, ArmReference referenceB, double x, double y, UnitOfDistance unitOfDistance) {
         this.jointName = jointName;
         this.unitOfAngle = unitOfAngle;
         this.angleLimitA = angleA;
         this.referenceA = referenceA;
         this.angleLimitB = angleB;
         this.referenceB = referenceB;
-        this.angleOffset = angleOffset;
         nextPoint.set(x, y);
         this.unitOfDistance = unitOfDistance;
 
+        fullArc = angleA + angleB;
         segmentLength = Math.sqrt(nextPoint.getX()*nextPoint.getX()+nextPoint.getY()*nextPoint.getY());
         angleToNext = UtilityKit.atan(nextPoint.getX()/nextPoint.getY(), unitOfAngle);
+    }
+
+    public void resetPosition(ArmReference reference) {
+        if (reference == referenceA) {
+            angleOffset = angleLimitA;
+        }
+        else {
+            angleOffset = angleLimitB;
+        }
     }
 
     public double getX(UnitOfDistance unit) {
@@ -148,9 +163,8 @@ public class ArmJoint {
     }
 
     public void updateAngles(int currentTicks) {
-        //TODO: Determine should/how angleOffset applies here
         oldAngle = currentAngle;
-        currentAngle = UtilityKit.armTicksToDegrees(currentTicks)+angleToNext;
+        currentAngle = UtilityKit.armTicksToDegrees(currentTicks)+angleToNext+angleOffset;
         deltaAngle = currentAngle - oldAngle;
     }
 

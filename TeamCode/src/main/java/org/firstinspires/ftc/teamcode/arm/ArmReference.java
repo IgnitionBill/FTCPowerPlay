@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.util;
+package org.firstinspires.ftc.teamcode.arm;
 
 public enum ArmReference {
     BOW, // Forward

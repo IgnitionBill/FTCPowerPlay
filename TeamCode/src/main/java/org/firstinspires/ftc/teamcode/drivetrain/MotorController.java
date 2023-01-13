@@ -1,6 +1,8 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.drivetrain;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.system.GamePadState;
+import org.firstinspires.ftc.teamcode.system.Sensors;
 
 import java.util.ArrayList;
 

@@ -1,6 +1,8 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.system;
 
-public class SafetyMonitor {
+import org.firstinspires.ftc.teamcode.drivetrain.MotorController;
+
+public class SafetyMonitor { //TODO: Decide weather we should keep this class around for the joke or delete it.
 
     public boolean grabberStop;
     public boolean upperStop;
@@ -15,6 +17,86 @@ public class SafetyMonitor {
         boolean upperSwitch;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
  /*
  We can dance if we want to

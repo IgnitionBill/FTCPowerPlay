@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.drivetrain;
 
 public class DriveMove {
     // Gear Ratio Ratio = 19.2:1
