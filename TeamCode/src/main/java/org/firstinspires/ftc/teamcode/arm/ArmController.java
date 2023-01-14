@@ -34,9 +34,9 @@ public class ArmController {
     private final double manualAngleTolerance = 5; // Degrees
     private final double manualPositionTolerance = 5; // CM
 
-    private ArmJoint table;
-    private ArmJoint base;
-    private ArmJoint lower;
+    public ArmJoint table;
+    public ArmJoint base;
+    public ArmJoint lower;
 
     private Telemetry telemetry;
 
@@ -48,7 +48,10 @@ public class ArmController {
     MotionSequenceDirector motionSequenceDirector;
 
     public void initialize(Sensors sensors, Telemetry telemetry) {
-        //TODO: Verify integrity of sequences
+        table = new ArmJoint("TurntableJoint", UnitOfAngle.DEGREES, 180, ArmReference.PORT, 180, ArmReference.STARBOARD, 20, 15, UnitOfDistance.CM);
+        base = new ArmJoint("BaseJointA", UnitOfAngle.DEGREES, 90, ArmReference.BOW, 80, ArmReference.STERN, 2.4, 28.8, UnitOfDistance.CM);
+        lower = new ArmJoint("LowerJoint", UnitOfAngle.DEGREES, 170, ArmReference.BOW, 0, ArmReference.STERN, -2.4, 28.8, UnitOfDistance.CM);
+
         motionSequenceDirector = new MotionSequenceDirector(sensors, telemetry);
 
         table = sensors.turnData;

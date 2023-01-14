@@ -16,6 +16,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.teamcode.CameraWrapper;
+import org.firstinspires.ftc.teamcode.arm.ArmController;
 import org.firstinspires.ftc.teamcode.arm.ArmJoint;
 import org.firstinspires.ftc.teamcode.arm.ArmReference;
 import org.firstinspires.ftc.teamcode.util.UnitOfAngle;
@@ -83,11 +84,6 @@ public class Sensors {
     public int backRightPosition;
     public int backLeftPosition;
 
-    public ArmJoint turnData;
-    public ArmJoint baseData;
-    public ArmJoint baseDataB;
-    public ArmJoint lowerData;
-
     private double time = 0;
     private double lastTime = 0;
     private double dt = 0; // the time interval since the last update function call
@@ -108,10 +104,6 @@ public class Sensors {
         // TODO: Coach suggests not to use the nautical convention here and to use positive and negative values for min and max angles, and call them min and max, min < max is obvious
         //TODO: Set angleOffset to the default angle the joints start at
         //TODO: Set proper x/y coordinates
-        turnData = new ArmJoint("TurntableJoint", UnitOfAngle.DEGREES, 180, ArmReference.PORT, 180, ArmReference.STARBOARD, 20, 15, UnitOfDistance.CM);
-        baseData = new ArmJoint("BaseJointA", UnitOfAngle.DEGREES, 90, ArmReference.BOW, 80, ArmReference.STERN, 2.4, 28.8, UnitOfDistance.CM);
-        baseDataB = new ArmJoint("BaseJointB", UnitOfAngle.DEGREES, 90, ArmReference.BOW, 80, ArmReference.STERN, 2.4, 28.8, UnitOfDistance.CM);
-        lowerData = new ArmJoint("LowerJoint", UnitOfAngle.DEGREES, 170, ArmReference.BOW, 0, ArmReference.STERN, -2.4, 28.8, UnitOfDistance.CM);
 
         try {
             //TODO: Determine whether IMU is required
@@ -140,21 +132,19 @@ public class Sensors {
         }
     }
 
-    public void update(Actuators actuators, boolean verbose) {
+    public void update(Actuators actuators, ArmController armController, boolean verbose) {
         try {
             time = runtime.seconds();
             dt = time - lastTime;
             lastTime = time;
 
-            lowerData.updateAngles(actuators.lowerSegment.getCurrentPosition());
-            baseData.updateAngles(actuators.baseSegment.getCurrentPosition());
-            baseDataB.updateAngles(actuators.baseSegment2.getCurrentPosition());
-            turnData.updateAngles(actuators.turnTable.getCurrentPosition());
+            armController.lower.updateAngles(actuators.lowerSegment.getCurrentPosition());
+            armController.base.updateAngles(actuators.baseSegment.getCurrentPosition());
+            armController.table.updateAngles(actuators.turnTable.getCurrentPosition());
 
-            lowerData.updateSpeed(actuators.lowerSegment.getVelocity());
-            baseData.updateSpeed(actuators.baseSegment.getVelocity());
-            baseDataB.updateSpeed(actuators.baseSegment2.getVelocity());
-            turnData.updateSpeed(actuators.turnTable.getVelocity());
+            armController.lower.updateSpeed(actuators.lowerSegment.getVelocity());
+            armController.base.updateSpeed(actuators.baseSegment.getVelocity());
+            armController.table.updateSpeed(actuators.turnTable.getVelocity());
 
             // Set old positions for drivetrain dc motors
             oldFrontLeftPosition = frontLeftPosition;
@@ -193,8 +183,8 @@ public class Sensors {
             pole = touchPole.isPressed();
 
             oldGrabberPosition = grabberPosition;
-            double grabberX = baseData.getX(UnitOfDistance.CM)+lowerData.getX(UnitOfDistance.CM);
-            double grabberY = baseData.getY(UnitOfDistance.CM)+lowerData.getY(UnitOfDistance.CM);
+            double grabberX = armController.base.getX(UnitOfDistance.CM)+armController.lower.getX(UnitOfDistance.CM);
+            double grabberY = armController.base.getY(UnitOfDistance.CM)+armController.lower.getY(UnitOfDistance.CM);
             grabberPosition.set(grabberX, grabberY);
             deltaGrabberPosition.set(grabberPosition.getX()-oldGrabberPosition.getX(), grabberPosition.getY()-oldGrabberPosition.getY());
 
