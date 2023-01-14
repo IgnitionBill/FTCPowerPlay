@@ -214,9 +214,9 @@ public class Sensors {
                 // buttons
                 telemetry.addData("lower limit A: ", lowerA);
                 telemetry.addData("lower Limit B: ", lowerB);
-                telemetry.addData("pole touch: ", pole);
+                telemetry.addData("pole touch: ", pole); // no, no
                 telemetry.addData("base limit: ", base);
-                telemetry.addData("cone A: ", coneA);
+                telemetry.addData("cone A: ", coneA); // no, light
                 telemetry.addData("cone B: ", coneB);
             }
         }

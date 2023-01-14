@@ -245,7 +245,7 @@ Java_org_firstinspires_ftc_teamcode_CameraWrapper_recordWithCameraViaJNI(JNIEnv 
 //}
 extern "C"
 JNIEXPORT jdoubleArray JNICALL
-Java_org_firstinspires_ftc_teamcode_CameraWrapper_scanForCone(JNIEnv *env, jclass clazz) {
+Java_org_firstinspires_ftc_teamcode_CameraWrapper_scanForConeJNI(JNIEnv *env, jclass clazz) {
     //ELOG("Scanning for cone CPP %d", __LINE__);
     rs2::context ctx;
     int number = ctx.query_devices().size();

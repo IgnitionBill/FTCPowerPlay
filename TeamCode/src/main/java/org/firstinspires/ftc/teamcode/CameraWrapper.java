@@ -10,6 +10,8 @@ import com.intel.realsense.librealsense.RsContext;
 import org.firstinspires.ftc.teamcode.util.Vector3D;
 
 public class CameraWrapper {
+    private boolean cameraEnabled = true;
+
     private RsContext mRsContext;
 
     static {
@@ -36,6 +38,7 @@ public class CameraWrapper {
 
             @Override
             public void onDeviceDetach() {
+                cameraEnabled = false;
                 Log.e("CameraWrapper", "Device is detached");
                 printMessage();
             }
@@ -72,12 +75,23 @@ public class CameraWrapper {
 
     }
 
+    public double[] scanForCone() {
+        if (cameraEnabled) {
+            return scanForConeJNI();
+        }
+        else {
+            double[] failure = {0.0, 0.0, 0.0};
+            return failure;
+        }
+    }
+
+
 
     /**
      * A native method that is implemented by the 'ftcrobotcontroller' native library,
      * which is packaged with this application.
      */
-    public native String cameraStringFromJNI();
+    private native String cameraStringFromJNI();
 
     private static native String nGetLibrealsenseVersionFromJNI();
 
@@ -89,5 +103,5 @@ public class CameraWrapper {
 
 //    public static native Vector3D vectorToCone();
 
-    public native double[] scanForCone();
+    private native double[] scanForConeJNI();
 }

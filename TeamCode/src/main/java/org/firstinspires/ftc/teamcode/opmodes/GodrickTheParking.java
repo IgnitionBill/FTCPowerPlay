@@ -13,8 +13,10 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.teamcode.drivetrain.DriveMove;
 import org.firstinspires.ftc.teamcode.drivetrain.MechanumController;
+import org.firstinspires.ftc.teamcode.system.Sensors;
 import org.firstinspires.ftc.teamcode.util.UnitOfAngle;
 import org.firstinspires.ftc.teamcode.util.UnitOfDistance;
+import org.firstinspires.ftc.teamcode.util.UtilityKit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +28,7 @@ public class GodrickTheParking extends LinearOpMode {
     // Create general variables
     private ElapsedTime runtime = new ElapsedTime();
 
-    private static final String TFOD_MODEL_ASSET = "PowerPlayConeReader5.tflite";
+    private static final String TFOD_MODEL_ASSET = "GOOSE.tflite";
 
     private static final String[] LABELS = {
             "DuckOne",
@@ -42,6 +44,8 @@ public class GodrickTheParking extends LinearOpMode {
     private TFObjectDetector tfod;
 
     public void runOpMode() throws InterruptedException {
+        Sensors sensors = new Sensors();
+        sensors.initialize(hardwareMap, telemetry);
 
         initVuforia();
        // initTfod();
@@ -67,10 +71,11 @@ public class GodrickTheParking extends LinearOpMode {
         //DriveMove middle  = mechanumController.moveInDirection(40, UnitOfDistance.IN, 90, UnitOfAngle.DEGREES, "middle");
         //DriveMove right = mechanumController.moveInDirection(68, UnitOfDistance.IN, 90, UnitOfAngle.DEGREES, "right");
 
-        DriveMove forward = mechanumController.moveInDirection(27.5, UnitOfDistance.IN, -90, UnitOfAngle.DEGREES, "forward");
-        DriveMove secondForward = mechanumController.moveInDirection(12, UnitOfDistance.IN, -90, UnitOfAngle.DEGREES, "secondForward");
-        DriveMove left = mechanumController.moveInDirection(27, UnitOfDistance.IN, -180, UnitOfAngle.DEGREES, "left");
-        DriveMove right = mechanumController.moveInDirection(27, UnitOfDistance.IN, 0, UnitOfAngle.DEGREES, "right");
+        DriveMove setupForward = mechanumController.moveInDirection(4, UnitOfDistance.IN, 0, UnitOfAngle.DEGREES, "setupMove");
+        DriveMove forward = mechanumController.moveInDirection(27.5-4, UnitOfDistance.IN, 0, UnitOfAngle.DEGREES, "forward");
+        DriveMove secondForward = mechanumController.moveInDirection(12, UnitOfDistance.IN, 0, UnitOfAngle.DEGREES, "secondForward");
+        DriveMove left = mechanumController.moveInDirection(27, UnitOfDistance.IN, -90, UnitOfAngle.DEGREES, "left");
+        DriveMove right = mechanumController.moveInDirection(27, UnitOfDistance.IN, 90, UnitOfAngle.DEGREES, "right");
 
         ArrayList<DriveMove> leftPark = new ArrayList<>();
         leftPark.add(forward);
@@ -96,6 +101,8 @@ public class GodrickTheParking extends LinearOpMode {
         DcMotorEx frontRightDriveMotor = (DcMotorEx) this.hardwareMap.dcMotor.get("frontRight");
         DcMotorEx backRightDriveMotor = (DcMotorEx) this.hardwareMap.dcMotor.get("backRight");
 
+        DcMotorEx turnTable = (DcMotorEx) this.hardwareMap.dcMotor.get("turnTable");
+
         // Correct motor directions
         frontLeftDriveMotor.setDirection(DcMotor.Direction.REVERSE);
         backLeftDriveMotor.setDirection(DcMotor.Direction.REVERSE);
@@ -106,16 +113,22 @@ public class GodrickTheParking extends LinearOpMode {
         frontRightDriveMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRightDriveMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        turnTable.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         // Reset the encoders to zero
         frontLeftDriveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontRightDriveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backRightDriveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backLeftDriveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        turnTable.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
         frontLeftDriveMotor.setPower(.5);
         backLeftDriveMotor.setPower(.5);
         frontRightDriveMotor.setPower(.5);
         backRightDriveMotor.setPower(.5);
+
+        turnTable.setPower(1);
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Waiting for Play", "Wait for Referees and then Press Play");
@@ -130,8 +143,27 @@ public class GodrickTheParking extends LinearOpMode {
         int previousCheck = 0;
         ArrayList<String> collectedLabels = new ArrayList<>();
 
+        turnTable.setTargetPosition(UtilityKit.armDegreesToTicks(-45));
+        turnTable.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        frontLeftDriveMotor.setTargetPosition(setupForward.frontLeftTicks);
+        frontRightDriveMotor.setTargetPosition(setupForward.frontRightTicks);
+        backRightDriveMotor.setTargetPosition(setupForward.backRightTicks);
+        backLeftDriveMotor.setTargetPosition(setupForward.backLeftTicks);
+
+        frontLeftDriveMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontRightDriveMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backRightDriveMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backLeftDriveMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        while (opModeIsActive() && turnTable.isBusy()) {
+            telemetry.addData("Setup: ", " Turning turnTable");
+        }
+
         // Find parking then set sequence
         while (opModeIsActive() && searching) {
+            telemetry.addData("Setup: ", " Searching for object");
+
             if (tfod != null) {
                 // getUpdatedRecognitions() will return null if no new information is available since
                 // the last time that call was made.
@@ -206,6 +238,8 @@ public class GodrickTheParking extends LinearOpMode {
             frontRightTicks = frontRightDriveMotor.getCurrentPosition();
             backRightTicks = backRightDriveMotor.getCurrentPosition();
             backLeftTicks = backLeftDriveMotor.getCurrentPosition();
+
+
 
             if (!frontLeftDriveMotor.isBusy()) {
                 if (!frontRightDriveMotor.isBusy()) {
