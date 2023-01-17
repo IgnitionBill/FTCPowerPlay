@@ -7,6 +7,8 @@ import android.widget.TextView;
 import com.intel.realsense.librealsense.DeviceListener;
 import com.intel.realsense.librealsense.RsContext;
 
+import org.firstinspires.ftc.teamcode.util.Vector3D;
+
 public class CameraWrapper {
     private RsContext mRsContext;
 
@@ -38,22 +40,24 @@ public class CameraWrapper {
                 printMessage();
             }
         });
-        Log.e("CameraWrapper", "Outside of device listener callback.");
-        testMulticamFromJNI();
+        Log.e("CameraWrapper", "Camera initialized.");
+        //recordWithCameraViaJNI(1);
+        //testMulticamFromJNI();
         printMessage();
     }
 
     private void printMessage() {
-        // Example of a call to native methods
-        int cameraCount = nGetCamerasCountFromJNI();
-        final String version = nGetLibrealsenseVersionFromJNI();
-        final String cameraCountString;
-        if(cameraCount == 0)
-            cameraCountString = "No cameras are currently connected.";
-        else
-            cameraCountString = "Camera is connected " + cameraCount;
+        try {
+            // Example of a call to native methods
+            int cameraCount = nGetCamerasCountFromJNI();
+            final String version = nGetLibrealsenseVersionFromJNI();
+            final String cameraCountString;
+            if (cameraCount == 0)
+                cameraCountString = "No cameras are currently connected.";
+            else
+                cameraCountString = "Number of cameras connected: " + cameraCount;
 
-        Log.e("CameraWrapper", "This app use librealsense: " + version + "\n" + cameraCountString);
+            Log.e("CameraWrapper", "This app use librealsense: " + version + "\n" + cameraCountString);
 //        runOnUiThread(new Runnable() {
 //            @Override
 //            public void run() {
@@ -61,6 +65,11 @@ public class CameraWrapper {
 //                tv.setText("This app use librealsense: " + version + "\n" + cameraCountString);
 //            }
 //        });
+        }
+        catch (Exception e){
+            Log.e("CameraWrapper", e.toString());
+        }
+
     }
 
 
@@ -75,4 +84,10 @@ public class CameraWrapper {
     private static native int nGetCamerasCountFromJNI();
 
     private native void testMulticamFromJNI();
+
+    private native void recordWithCameraViaJNI(int sec);
+
+//    public static native Vector3D vectorToCone();
+
+    public native double[] scanForCone();
 }
