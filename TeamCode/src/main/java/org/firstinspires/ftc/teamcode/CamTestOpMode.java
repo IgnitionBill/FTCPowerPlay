@@ -29,7 +29,8 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import android.content.Context;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -37,15 +38,20 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 /**
  * Demonstrates empty OpMode
  */
-@TeleOp(name = "Concept: NullOp", group = "Concept")
+@TeleOp(name = "CamTest-m", group = "Concept")
 //@Disabled
-public class ConceptNullOp extends OpMode {
+public class CamTestOpMode extends OpMode {
 
   private ElapsedTime runtime = new ElapsedTime();
 
   @Override
   public void init() {
+
     telemetry.addData("Status", "Initialized");
+    Context appContext = hardwareMap.appContext;
+//    TestJNIWrapper testJNI = new TestJNIWrapper(appContext);
+    CameraWrapper testCameraJNI = new CameraWrapper(appContext);
+
   }
 
   /*
