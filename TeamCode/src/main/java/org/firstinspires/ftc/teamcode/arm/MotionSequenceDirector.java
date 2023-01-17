@@ -17,6 +17,7 @@ public class MotionSequenceDirector {
     ArmPosition endPosition; // final position in sequence
     ArmPosition tickTarget; // ???
     ArmPosition currentPosition;
+    MotionSequence currentSequence;
     private boolean currentSequenceDone = true;
 
     public MotionSequenceDirector(Sensors sensors, Telemetry telemetry) {
@@ -60,10 +61,22 @@ public class MotionSequenceDirector {
         Log.e("Director Man says: ", "X: " + toCone.x + " Y: " + toCone.y + " Z: " + toCone.z);
 
         // if a target was not found, then give up
+        if(toCone.z == 0 || toCone.z > .765){
+            Log.e("MotionSequenceDirector", "Cone not found within reach");
+            return;
+        }
 
-        // if a target was found, try to pick it up
+        // if a target was found, launch the motion sequence with the detected position
+        runGrabSequence(toCone);
 
-        // launch the motion sequence with the scanned variables
+    }
+
+    private void runGrabSequence(Vector3D toCone){
+        // change the sequence
+     //   currentSequence = DefinedMotionSequences
+
+        // set that we are in a sequence
+
     }
 
     private void tryToPlace(){

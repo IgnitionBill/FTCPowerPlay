@@ -6,10 +6,6 @@ public class MotionSequence {
     ArrayList<ArmPosition> sequence = new ArrayList<>();
     MotionSequenceName name;
 
-    public MotionSequence() {
-        this.name = null;
-    }
-
     public MotionSequence(MotionSequenceName name){
         this.name = name;
     }

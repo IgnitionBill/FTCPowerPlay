@@ -55,9 +55,9 @@ public class ArmController {
         base = sensors.baseData;
         lower = sensors.lowerData;
 
-        //baseHome = false;
-        //lowerHome = false;
-        //autoHoming = true;
+        baseHome = false;
+        lowerHome = false;
+        autoHoming = true;
 
         this.telemetry = telemetry;
         // store the initial position of the arm
@@ -67,7 +67,6 @@ public class ArmController {
     public void updateArm(GamePadState gamePadState, Actuators actuators, Sensors sensors, boolean verbose) {
         // if the arm is homing: disable normal functions
 
-        autoHoming = false;
         if (autoHoming) {
             autoHome(sensors, actuators, verbose);
         }
