@@ -29,6 +29,8 @@
 
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -134,6 +136,7 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
                 if (tfod != null) {
                     // getUpdatedRecognitions() will return null if no new information is available since
                     // the last time that call was made.
+                    Log.e("ConceptTensorFlowObjectDetector","Detecting Objects");
                     List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                     if (updatedRecognitions != null) {
                         telemetry.addData("# Objects Detected", updatedRecognitions.size());
@@ -152,6 +155,9 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
                             telemetry.addData("- Size (Width/Height)","%.0f / %.0f", width, height);
                         }
                         telemetry.update();
+                    }
+                    else{
+                        Log.e("ConceptTensorFlowObjectDetector","UpdatedRecognitions is " + updatedRecognitions);
                     }
                 }
             }
