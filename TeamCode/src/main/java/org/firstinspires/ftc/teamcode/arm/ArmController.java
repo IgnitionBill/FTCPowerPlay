@@ -281,19 +281,24 @@ public class ArmController {
     // TODO: FOR EXAMPLE, in autoMode when the attack button is pressed, we look for a cone and grab it
     // and when the B button is pressed, it looks for a pole and places it
     private void godrickAttackMode(GamePadState gamePadState, Sensors sensors){
+        // update the motion director
+        motionSequenceDirector.update();
 
         if(gamePadState.a){
-           // Log.i("ArmController", "A Pressed.");
+            Log.i("ArmController", "Grab Pressed.");
             motionSequenceDirector.requestNewSequence(MotionSequenceName.CarryToGrabToCarry);
 
         }
         else if(gamePadState.b){
+            Log.i("ArmController", "Place Pressed.");
             motionSequenceDirector.requestNewSequence(MotionSequenceName.CarryToPlaceToCarry);
         }
         else if(gamePadState.x){
+            Log.i("ArmController", "Home Pressed.");
             motionSequenceDirector.requestNewSequence(MotionSequenceName.CarryToHome);
         }
         else if(gamePadState.y){
+            Log.i("ArmController", "Carry Pressed.");
             motionSequenceDirector.requestNewSequence(MotionSequenceName.HomeToCarry);
         }
         else{

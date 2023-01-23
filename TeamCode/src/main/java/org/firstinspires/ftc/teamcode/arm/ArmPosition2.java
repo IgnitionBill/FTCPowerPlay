@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.util.UnitOfDistance;
 import org.firstinspires.ftc.teamcode.util.UtilityKit;
 
 public class ArmPosition2 {
-    public double th0;
+    public double th0; // turn table
     public double th1;
     public double th2;
     public CoordinateCylinder position;

@@ -2,14 +2,28 @@ package org.firstinspires.ftc.teamcode.arm;
 
 import java.util.ArrayList;
 
+/**
+ * Motion sequence is like a playlist of ArmPoses
+ */
 public class MotionSequence {
-    ArrayList<ArmPosition> sequence = new ArrayList<>();
-    MotionSequenceName name;
+    protected ArrayList<ArmPose> sequence = new ArrayList<>();
+    private int current = 0; // the current target
 
-    public MotionSequence(MotionSequenceName name){
-        this.name = name;
+    public MotionSequence(){
+
     }
-    public void add(ArmPosition armPosition){
-        sequence.add(armPosition);
+
+    // get the current target ArmPose
+    public ArmPose currentTarget(){
+        return sequence.get(current);
+    }
+
+    // switch to the next target if there is one, otherwise switch back to start and return false
+    public boolean nextTarget(){
+        if(current++ < sequence.size()){
+            return true;
+        }
+        current = 0; // start over
+        return false;
     }
 }

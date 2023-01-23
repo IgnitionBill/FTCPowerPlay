@@ -11,6 +11,10 @@ import org.firstinspires.ftc.teamcode.util.Vector2D;
  * segment.  And the angle is measured in the forward direction for positive values.
  * When angles are measured relative to the world they are measured from straight up and in the
  * forward direction of the robot's start position.
+ *
+ * Requested movements from (x1, y1, z1) to (x2, y2, z2) are treated with inverse kinematics to produce
+ * the angles and angular velocities for smooth movement.
+ *
  */
 public class ArmPosition {
     public double th0; // angle of base joint

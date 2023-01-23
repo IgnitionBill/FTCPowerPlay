@@ -28,12 +28,12 @@ public class GodrickTheParking extends LinearOpMode {
     // Create general variables
     private ElapsedTime runtime = new ElapsedTime();
 
-    private static final String TFOD_MODEL_ASSET = "GOOSE.tflite";
+    private static final String TFOD_MODEL_ASSET = "GOOSE2.tflite";
 
     private static final String[] LABELS = {
-            "DuckOne",
-            "DuckTwo",
-            "DuckThree"
+            "One",
+            "Three",
+            "Two"
     };
 
     private static final String VUFORIA_KEY =
@@ -128,7 +128,7 @@ public class GodrickTheParking extends LinearOpMode {
         frontRightDriveMotor.setPower(.5);
         backRightDriveMotor.setPower(.5);
 
-        turnTable.setPower(1);
+        turnTable.setPower(.5);
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Waiting for Play", "Wait for Referees and then Press Play");
@@ -196,7 +196,7 @@ public class GodrickTheParking extends LinearOpMode {
             }
 
             // when enough time has passed exit loop
-            if (runtime.time(TimeUnit.SECONDS) > 5) {
+            if (runtime.time(TimeUnit.SECONDS) > 10) {
                 searching = false;
             }
         }
@@ -208,9 +208,9 @@ public class GodrickTheParking extends LinearOpMode {
         // set sequence to correspond to the label
         if (commonLabel == LABELS[0]) {
             currentSequence = leftPark;
-        } else if (commonLabel == LABELS[1]) {
-            currentSequence = middlePark;
         } else if (commonLabel == LABELS[2]) {
+            currentSequence = middlePark;
+        } else if (commonLabel == LABELS[1]) {
             currentSequence = rightPark;
         } else {
             currentSequence = middlePark;

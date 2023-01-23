@@ -39,7 +39,7 @@ public class MotorController {
 
     public boolean grabberRelease;
 
-    public final static int BASE_TICKS = 200;
+    public final static int BASE_TICKS = 100;
 
     private Telemetry telemetry;
 

@@ -1,20 +1,16 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-import android.content.Context;
-
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.CameraWrapper;
 import org.firstinspires.ftc.teamcode.system.Actuators;
 import org.firstinspires.ftc.teamcode.system.GamePadState;
 import org.firstinspires.ftc.teamcode.drivetrain.MotorController;
 import org.firstinspires.ftc.teamcode.system.SafetyMonitor;
 import org.firstinspires.ftc.teamcode.system.Sensors;
 import org.firstinspires.ftc.teamcode.arm.ArmController;
-import org.firstinspires.ftc.teamcode.arm.DefinedArmPositions;
-import org.firstinspires.ftc.teamcode.arm.DefinedMotionSequences;
+import org.firstinspires.ftc.teamcode.arm.ArmPoseGenerator;
 
 @TeleOp(name="GodrickTheOpMode", group = "FullOpMode")
 
@@ -31,7 +27,7 @@ public class GodrickTheOpMode extends LinearOpMode {
     private Sensors sensors = new Sensors();
     private SafetyMonitor safetyMonitor = new SafetyMonitor();
     private ArmController armController = new ArmController();
-    private DefinedArmPositions definedArmPositions = new DefinedArmPositions();
+    private ArmPoseGenerator definedArmPositions = new ArmPoseGenerator();
     private DefinedMotionSequences definedMotionSequences = new DefinedMotionSequences();
 
     // Create references to control classes
@@ -76,7 +72,7 @@ public class GodrickTheOpMode extends LinearOpMode {
             motorController.servoUpdate(gamePadState);
 
             //Calculate the next move for the DC motors
-            armController.updateArm(gamePadState, actuators, sensors, true);
+            //armController.updateArm(gamePadState, actuators, sensors, true);
 
             actuators.updateDrivetrainMotors(motorController);
             actuators.updateServos(motorController);
