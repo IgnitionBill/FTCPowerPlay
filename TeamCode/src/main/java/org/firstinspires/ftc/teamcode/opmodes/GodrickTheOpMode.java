@@ -28,7 +28,7 @@ public class GodrickTheOpMode extends LinearOpMode {
     private SafetyMonitor safetyMonitor = new SafetyMonitor();
     private ArmController armController = new ArmController();
     private ArmPoseGenerator definedArmPositions = new ArmPoseGenerator();
-    private DefinedMotionSequences definedMotionSequences = new DefinedMotionSequences();
+
 
     // Create references to control classes
     private MotorController motorController = new MotorController();
@@ -46,7 +46,7 @@ public class GodrickTheOpMode extends LinearOpMode {
         sensors.initialize(hardwareMap, telemetry);
         motorController.initialize(telemetry);
         armController.initialize(sensors, telemetry);
-        definedMotionSequences.init(definedArmPositions);
+      //  definedMotionSequences.init(definedArmPositions);
         gamePadState.initialize(telemetry);
 
         telemetry.addData("Status", "Initialized");

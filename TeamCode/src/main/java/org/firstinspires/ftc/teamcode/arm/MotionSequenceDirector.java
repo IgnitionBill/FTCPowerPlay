@@ -74,7 +74,7 @@ public class MotionSequenceDirector {
             return;
         }
 
-        CylindricalVector3D toConeCylindrical = Robot.transformFromCameraToRobotCoordinates(toCone);
+        CylindricalVector3D toConeCylindrical = new CylindricalVector3D();// = Robot.transformFromCameraToRobotCoordinates(toCone);
 
         Log.e("MotionSequenceDirector", "X " + toCone.x + " Y " + toCone.y + " Z " + toCone.z);
         Log.e("MotionSequenceDirector", " rho " + toConeCylindrical.rho + " th " + toConeCylindrical.theta + " z " + toConeCylindrical.z);

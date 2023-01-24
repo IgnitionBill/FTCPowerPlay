@@ -83,11 +83,11 @@ public class Matrix3x3 {
         );
     }
 
-    public Matrix3x3 transpose(){
-        return copy().internalTranspose();
+    public Matrix3x3 copyTranspose(){
+        return copy().transpose();
     }
 
-    public Matrix3x3 internalTranspose(){
+    public Matrix3x3 transpose(){
         double swap;
         swap = m[1][0];
         m[1][0] = m[0][1];
@@ -111,7 +111,7 @@ public class Matrix3x3 {
         Matrix3x3 rotX = new Matrix3x3();
         rotX.setRotation(90, vx); // a 90 degree rotation about the x axis
         Vector3D r1 = rotX.multiply(s1); // should result in (1, -100, 10)
-        Matrix3x3 invR1 = rotX.transpose(); // should be the transpose
+        Matrix3x3 invR1 = rotX.copyTranspose(); // should be the transpose
         Vector3D r2 = invR1.multiply(r1); // should result in s1
     }
 }

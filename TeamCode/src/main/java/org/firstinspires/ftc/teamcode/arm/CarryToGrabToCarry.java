@@ -45,7 +45,7 @@ public class CarryToGrabToCarry extends MotionSequence{
         sequence.add(ArmPoseGenerator.gripAndMoveTo(target));
 
         // move upward
-        sequence.add(ArmPoseGenerator.moveTo(aboveTarget));
+       // sequence.add(ArmPoseGenerator.moveTo(aboveTarget));
 
         // retract to carry position
         sequence.add(ArmPoseGenerator.carry);
