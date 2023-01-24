@@ -31,18 +31,35 @@ public class CylindricalVector3D {
         return new Vector3D(rho * Math.cos(thRadians), rho * Math.sin(thRadians), z);
     }
 
-    public CylindricalVector3D toCylindrical(Vector3D v){
+    public static CylindricalVector3D toCylindrical(Vector3D v){
         return new CylindricalVector3D(Math.sqrt(v.x*v.x + v.y*v.y), Math.toDegrees(Math.atan2(v.x, v.y)), v.z);
     }
 
     /**
-     * Simple addition of cylindrical vectors, assuming they are pointed in the same theta
+     * Simple addition of cylindrical vectors
      */
-    public CylindricalVector3D simpleAddition(CylindricalVector3D v){
+    public static CylindricalVector3D add(CylindricalVector3D v1, CylindricalVector3D v2){
+        double diff = Math.toRadians(v1.theta - v2.theta);
+        double cosDiff = Math.cos(diff);
+        double sinDiff = Math.sin(diff);
         return new CylindricalVector3D(
-                Math.sqrt(v.rho * v.rho + this.rho * this.rho + 2 * v.rho * this.rho * Math.cos(Math.toRadians(v.theta - this.theta))),
-                theta,
-                v.z + this.z
+                Math.sqrt(v1.rho * v1.rho + v2.rho * v2.rho + 2 * v1.rho * v2.rho * cosDiff),
+                v2.theta + Math.toDegrees(Math.atan2(v1.rho * sinDiff, v2.rho + v1.rho * cosDiff)),
+                v1.z + v2.z
         );
+    }
+
+    public static void runTest(){
+        // TODO: try numbers from -400 degrees to 400 degrees
+        CylindricalVector3D v1 = new CylindricalVector3D(10, 45, 10);
+        CylindricalVector3D v2 = new CylindricalVector3D(50, 10, 20);
+        CylindricalVector3D sum = add(v1, v2);
+        CylindricalVector3D sum2 = add(v2, v1); // should equal sum
+        Vector3D cart1 = v1.toCartesian();
+        Vector3D cart2 = v2.toCartesian();
+        CylindricalVector3D v1fromCart = toCylindrical(cart1); // should equal v1
+        CylindricalVector3D v2fromCart = toCylindrical(cart2); // should equal v2
+        Vector3D cartSum = Vector3D.add(cart1, cart2);
+        CylindricalVector3D sumFromCart = toCylindrical(cartSum); // should equal sum and sum2
     }
 }

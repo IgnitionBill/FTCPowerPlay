@@ -25,14 +25,15 @@ public class Vector3D {
         this.z = v.z;
     }
 
-    public Vector3D add(double x, double y, double z){
-        this.x += x;
-        this.y += y;
-        this.z += z;
-        return this;
+    public static Vector3D add(Vector3D v1, Vector3D v2){
+        return new Vector3D(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
     }
 
     public Vector3D add(Vector3D v){
-        return add(v.x, v.y, v.z);
+        return new Vector3D(v.x + x, v.y + y, v.z + z);
+    }
+
+    public Vector3D subtract(Vector3D v){
+        return new Vector3D(-v.x + x, -v.y + y, -v.z + z);
     }
 }

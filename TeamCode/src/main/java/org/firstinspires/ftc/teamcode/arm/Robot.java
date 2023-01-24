@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.arm;
 
+import org.checkerframework.checker.units.qual.C;
 import org.firstinspires.ftc.teamcode.util.CylindricalVector3D;
 import org.firstinspires.ftc.teamcode.util.Vector3D;
 
@@ -18,13 +19,13 @@ public class Robot {
     double height; // height of the bounding box of the drivetrain
 
     // length of each arm segment
-    public final static double top = 10.2; //
+    public final static double top = 10.2; // top of the turntable
     public final static double L0R = 12.5; // radial distance to the center of the first joint from the origin of robot:(12.5 cm, alpha, 23.0 cm)
     public final static double L0Z = 23.0; // height of the first joint above the floor
     public final static double L1 = 34.0;  // cm
     public final static double L2 = 11.0; // cm
     public final static double L3 = 20.66; // because it rotates
-    public final static double L4 = 2.84; // cm, to the center of the gripper
+    public final static double L4 = 2.84; // cm, to the center of the gripper?
     public final static double L5R = 8.0; // the forward displacement of the center of the gripper relative to the joint 5
     public final static double L5RTH = 9.0; // the rightward displacement to the center of the gripper relative to J5
     public final static double L34 = L3 + L4;
@@ -71,6 +72,12 @@ public class Robot {
     // camera normal in cartesian coordinates
     Vector3D cameraNormalCart = new Vector3D();
 
+    CylindricalVector3D l0 = new CylindricalVector3D();
+    CylindricalVector3D l1 = new CylindricalVector3D();
+    CylindricalVector3D l2 = new CylindricalVector3D();
+    CylindricalVector3D lCam = new CylindricalVector3D();
+    CylindricalVector3D lGrip = new CylindricalVector3D();
+
     public void update(){
         // location of the turntable top center in robot coordinates
         j0.set(0.0, theta+currentPos.th0, top);
@@ -106,7 +113,7 @@ public class Robot {
 
     public CylindricalVector3D transformFromCameraToRobotCoordinates(Vector3D v){
         // transform the target vector v from camera coordinates to robot coordinates
-        Vector3D vTrans = new Vector3D(cameraNormalCart.x * v.z, cameraNormalCart.y, cameraNormalCart.z );
+        Vector3D vTransformed = new Vector3D(cameraNormalCart.x * v.z, cameraNormalCart.y, cameraNormalCart.z );
 
         // sum the camera vector with the target vector to get the target vector in robot coordinates
 
