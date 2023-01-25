@@ -1,12 +1,20 @@
-package org.firstinspires.ftc.teamcode.arm;
+package org.firstinspires.ftc.teamcode.sequence;
 
 import android.util.Log;
 
+import com.qualcomm.robotcore.robot.Robot;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.arm.ArmPose;
 import org.firstinspires.ftc.teamcode.system.Sensors;
 import org.firstinspires.ftc.teamcode.util.CylindricalVector3D;
 import org.firstinspires.ftc.teamcode.util.Vector3D;
 
+/**
+ * The MotionSequenceDirector manages MotionSequences, which are playlists of motions.
+ * A motion directs systems of the robot to perform some kind of action until some specified state
+ * is achieved.
+ */
 public class MotionSequenceDirector {
 
     Sensors sensors;
@@ -74,7 +82,7 @@ public class MotionSequenceDirector {
             return;
         }
 
-        CylindricalVector3D toConeCylindrical = new CylindricalVector3D();// = Robot.transformFromCameraToRobotCoordinates(toCone);
+        CylindricalVector3D toConeCylindrical = new CylindricalVector3D();//Robot.transformFromCameraToRobotCoordinates(toCone);
 
         Log.e("MotionSequenceDirector", "X " + toCone.x + " Y " + toCone.y + " Z " + toCone.z);
         Log.e("MotionSequenceDirector", " rho " + toConeCylindrical.rho + " th " + toConeCylindrical.theta + " z " + toConeCylindrical.z);

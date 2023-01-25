@@ -1,4 +1,6 @@
-package org.firstinspires.ftc.teamcode.arm;
+package org.firstinspires.ftc.teamcode.sequence;
+
+import org.firstinspires.ftc.teamcode.arm.ArmPose;
 
 import java.util.ArrayList;
 

@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.arm;
 import android.util.Log;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.sequence.MotionSequenceDirector;
+import org.firstinspires.ftc.teamcode.sequence.MotionSequenceName;
 import org.firstinspires.ftc.teamcode.system.Actuators;
 import org.firstinspires.ftc.teamcode.system.GamePadState;
 import org.firstinspires.ftc.teamcode.system.Sensors;
@@ -13,11 +15,20 @@ import org.firstinspires.ftc.teamcode.util.Vector2D;
 
 import java.util.ArrayList;
 
+/**
+ * ArmController is the top level of control for the arm.
+ * Curing the initialize function, it stores references and creates things.
+ * During the update function it checks which ArmControlMode is active and switches to that function.
+ * AutoHome is always the first ArmControlMode activated, to verify the arm position.
+ * Manual mode is used to control individual motors for testing purposes.
+ * AttackMode automates pick and place actions.
+ */
 public class ArmController {
     //TODO: Cleanup unused variables
 
+    ArmControlMode armControlMode = ArmControlMode.AUTO_HOME; // always default to AUTO_HOME
+
     boolean currentSequenceDone = true;
-    boolean autoHoming = false;
     boolean baseHome = true;
     boolean lowerHome = true;
     int sequenceIndex = 0;
@@ -57,7 +68,6 @@ public class ArmController {
 
         baseHome = false;
         lowerHome = false;
-        autoHoming = true;
 
         this.telemetry = telemetry;
         // store the initial position of the arm
@@ -67,29 +77,12 @@ public class ArmController {
     public void updateArm(GamePadState gamePadState, Actuators actuators, Sensors sensors, boolean verbose) {
         // if the arm is homing: disable normal functions
 
-        if (autoHoming) {
+        if (armControlMode == ArmControlMode.AUTO_HOME) {
             autoHome(sensors, actuators, verbose);
         }
-        else {
+        else if (armControlMode == ArmControlMode.ATTACK) {
             godrickAttackMode(gamePadState, sensors);
-
-            //TODO: Replace goManual with semiAutonomous control
-            //TODO: Replace trueManual with goManual
-            //TODO: Revamp sequence system for semiAutonomous
-            //if (gamePadState.altMode) {
-                //trueManual(gamePadState);
-           // } else {
-                //godrickTheManual(gamePadState, sensors);
-           // }
-
-            // Limit the angles to a certain range
-            //TODO: Determine if we need a way to disable limits during use
-            //grabberBend = UtilityKit.limitToRange(grabberBend, -100.0, 100.0);
-            //grabberRotation = UtilityKit.limitToRange(grabberRotation, -100.0, 100.0);
-            //turnTableTicks = UtilityKit.limitToRange(turnTableTicks, sensors.turnData.getTicksLimit(ArmReference.PORT), sensors.turnData.getTicksLimit(ArmReference.STARBOARD));
-            //baseTicks = UtilityKit.limitToRange(turnTableTicks, sensors.baseData.getTicksLimit(ArmReference.STERN), sensors.baseData.getTicksLimit(ArmReference.BOW));
-            //lowerTicks = UtilityKit.limitToRange(turnTableTicks, sensors.lowerData.getTicksLimit(ArmReference.STERN), sensors.lowerData.getTicksLimit(ArmReference.BOW));
-        }
+         }
 
         // check arm limits
         checkArmLimits(sensors);
@@ -262,7 +255,7 @@ public class ArmController {
         }
 
         if (baseHome && lowerHome) {
-            autoHoming = false;
+            armControlMode = ArmControlMode.ATTACK;
         }
         else { // slowly move arm until it presses the button
             if (!baseHome) {
@@ -274,7 +267,7 @@ public class ArmController {
         }
 
         if (verbose) {
-            telemetry.addData("Homing ", autoHoming);
+            telemetry.addData("ArmControlMode ", armControlMode.toString());
         }
     }
 

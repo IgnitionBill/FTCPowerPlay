@@ -36,6 +36,16 @@ public class ArmPose {
         this.th6 = th6;
     }
 
+    public void setThetas(double th0, double th1, double th2, double th3, double th4, double th5, double th6){
+        this.th0 = th0;
+        this.th1 = th1;
+        this.th2 = th2;
+        this.th3 = th3;
+        this.th4 = th4;
+        this.th5 = th5;
+        this.th6 = th6;
+    }
+
     public void setOmegas(double om0, double om1, double om2, double om3, double om4, double om5, double om6){
         this.om0 = om0;
         this.om1 = om1;

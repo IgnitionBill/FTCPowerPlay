@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.arm;
 
 import org.firstinspires.ftc.teamcode.util.CylindricalVector3D;
-import org.firstinspires.ftc.teamcode.util.Vector2D;
-import org.firstinspires.ftc.teamcode.util.Vector3D;
 
 /**
  * aka the Armory
@@ -32,7 +30,7 @@ public class ArmPoseGenerator {
 
     public static ArmPose rotateTo(CylindricalVector3D target) {
         // use Robot class to transform from robot cylindrical coordinates to robot arm angles
-        Robot robot = new Robot();
+        Arm arm = new Arm();
       //  robot.update(new Vector2D(target.z, target.rho), new Vector2D(0.0, 0.0));
 
         double th0, th1, th2, th3, th4, th5, th6;
@@ -67,7 +65,7 @@ public class ArmPoseGenerator {
 
     public static ArmPose releaseGripAndMoveTo(CylindricalVector3D target) {
         // use Robot class to transform from robot cylindrical coordinates to robot arm angles
-        Robot robot = new Robot();
+        Arm arm = new Arm();
       //  robot.update(new Vector2D(target.z, target.rho), new Vector2D(0.0, 0.0));
 
         double th0, th1, th2, th3, th4, th5, th6;

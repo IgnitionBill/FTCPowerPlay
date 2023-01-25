@@ -1,10 +1,11 @@
-package org.firstinspires.ftc.teamcode.arm;
+package org.firstinspires.ftc.teamcode.sequence;
 
+import org.firstinspires.ftc.teamcode.arm.ArmPoseGenerator;
 import org.firstinspires.ftc.teamcode.navigation.Field;
+import org.firstinspires.ftc.teamcode.sequence.MotionSequence;
 import org.firstinspires.ftc.teamcode.util.CylindricalVector3D;
-import org.firstinspires.ftc.teamcode.util.Vector3D;
 
-public class CarryToGrabToCarry extends MotionSequence{
+public class CarryToGrabToCarry extends MotionSequence {
 
     /**
      * This is the default grab sequence, aimed at 50.0 cm in front of the robot's facing

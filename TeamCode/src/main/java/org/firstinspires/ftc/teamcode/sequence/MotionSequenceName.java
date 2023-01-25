@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.arm;
+package org.firstinspires.ftc.teamcode.sequence;
 
 public enum MotionSequenceName {
     CarryToHome, HomeToCarry, CarryToGrabToCarry, CarryToPlaceToCarry;

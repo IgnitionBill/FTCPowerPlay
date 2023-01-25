@@ -103,6 +103,32 @@ public class Matrix3x3 {
         return this;
     }
 
+    /**
+     * Multiplies two matrices into this matrix
+     * @param m1
+     * @param m2
+     * @return
+     */
+    public Matrix3x3 multiply(Matrix3x3 m1, Matrix3x3 m2){
+        return multiply(m1, m2, this);
+    }
+
+    public static Matrix3x3 multiply(Matrix3x3 m1, Matrix3x3 m2, Matrix3x3 r){
+        r.m[0][0] = m1.m[0][0] * m2.m[0][0] + m1.m[0][1] * m2.m[1][0] + m1.m[0][2] * m2.m[2][0];
+        r.m[0][1] = m1.m[0][0] * m2.m[0][1] + m1.m[0][1] * m2.m[1][1] + m1.m[0][2] * m2.m[2][1];
+        r.m[0][2] = m1.m[0][0] * m2.m[0][2] + m1.m[0][1] * m2.m[1][2] + m1.m[0][2] * m2.m[2][2];
+
+        r.m[1][0] = m1.m[1][0] * m2.m[0][0] + m1.m[1][1] * m2.m[1][0] + m1.m[1][2] * m2.m[2][0];
+        r.m[1][1] = m1.m[1][0] * m2.m[0][1] + m1.m[1][1] * m2.m[1][1] + m1.m[1][2] * m2.m[2][1];
+        r.m[1][2] = m1.m[1][0] * m2.m[0][2] + m1.m[1][1] * m2.m[1][2] + m1.m[1][2] * m2.m[2][2];
+
+        r.m[2][0] = m1.m[2][0] * m2.m[0][0] + m1.m[2][1] * m2.m[1][0] + m1.m[2][2] * m2.m[2][0];
+        r.m[2][1] = m1.m[2][0] * m2.m[0][1] + m1.m[2][1] * m2.m[1][1] + m1.m[2][2] * m2.m[2][1];
+        r.m[2][2] = m1.m[2][0] * m2.m[0][2] + m1.m[2][1] * m2.m[1][2] + m1.m[2][2] * m2.m[2][2];
+
+        return r;
+    }
+
     public static void test(){
         Vector3D s1 = new Vector3D(1, 10, 100);
         Vector3D vx = new Vector3D(1, 0, 0); // x unit vector
