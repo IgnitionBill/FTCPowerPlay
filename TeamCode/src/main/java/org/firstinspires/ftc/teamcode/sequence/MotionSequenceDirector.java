@@ -89,10 +89,10 @@ public class MotionSequenceDirector {
             return;
         }
         // transform from camera coordinates to the robot coordinates, meters to cm
-        Vector3D toCone = new Vector3D(position[0]*100, position[1]*100, position[2]*100); // TODO: move this unit change to cpp file or camera wrapper
+        Vector3D toCone = new Vector3D(position[0], position[1], position[2]);
 
         // if a target was not found, then give up
-        if(toCone.z == 0){ // || toCone.z > .765){ // TODO: NEED TO TRANSFORM IT FIRST TO ROBOT COORDS
+        if(toCone.z == 0){
             Log.e("MotionSequenceDirector", "Cone not found");
             return;
         }
@@ -100,7 +100,7 @@ public class MotionSequenceDirector {
         // transform the vector from camera coordinates to robot coordinates
         Vector3D theCone = godrick.arm.transformCameraToRobotCoords(toCone);
 
-        if(theCone.x > 765){
+        if(theCone.x > 76.5){
             Log.e("MotionSequenceDirector", "Cone too far");
             return;
         }
@@ -127,10 +127,10 @@ public class MotionSequenceDirector {
             return;
         }
         // transform from camera coordinates to the robot coordinates, meters to cm
-        Vector3D toCone = new Vector3D(position[0]*100, position[1]*100, position[2]*100); // TODO: move this unit change to cpp file or camera wrapper
+        Vector3D toCone = new Vector3D(position[0], position[1], position[2]);
 
         // if a target was not found, then give up
-        if(toCone.z == 0){ // || toCone.z > .765){ // TODO: NEED TO TRANSFORM IT FIRST TO ROBOT COORDS
+        if(toCone.z == 0){
             Log.e("MotionSequenceDirector", "Cone not found");
             return;
         }
@@ -138,7 +138,7 @@ public class MotionSequenceDirector {
         // transform the vector from camera coordinates to robot coordinates
         Vector3D theCone = godrick.arm.transformCameraToRobotCoords(toCone);
 
-        if(theCone.x > 765){
+        if(theCone.x > 76.5){
             Log.e("MotionSequenceDirector", "Cone too far");
             return;
         }

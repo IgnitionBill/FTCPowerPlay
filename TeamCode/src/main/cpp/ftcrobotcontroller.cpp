@@ -243,6 +243,8 @@ Java_org_firstinspires_ftc_teamcode_CameraWrapper_recordWithCameraViaJNI(JNIEnv 
 //
 //    return (*env).NewObject(vector3D, constructor, x, y, z);
 //}
+
+/////////////////////////////  SCAN FOR CONE //////////////////////////////////////
 extern "C"
 JNIEXPORT jdoubleArray JNICALL
 Java_org_firstinspires_ftc_teamcode_CameraWrapper_scanForConeJNI(JNIEnv *env, jclass clazz) {
@@ -270,20 +272,21 @@ Java_org_firstinspires_ftc_teamcode_CameraWrapper_scanForConeJNI(JNIEnv *env, jc
     // RGB frame rate: 90 fps
     // FOV: H: 87, V: 58 // H: 1.5184, V: 1.0122 // (n * PI) / 180
 
-    float lCamera = 6.5; // cm // X distance to camera from base joint
-    float l0 = 12.5; // cm // X distance from center to base joint
-    float l1 = 33.5; // cm // Distance from base joint to lower joint
-    float l2 = 34; // cm // Distance from lower joint to wrist joint
-    float l3 = 18; // cm // Distance from wrist to center of gripper
-    float coneRadius = 2.5; // cm // Radius of cone
-
-    float maxRange = l1 + l2 + l3 - lCamera -
-                     coneRadius; // 76.5 cm // Maximum reach from camera to center of gripper
+//    float lCamera = 6.5; // cm // X distance to camera from base joint
+//    float l0 = 12.5; // cm // X distance from center to base joint
+//    float l1 = 33.5; // cm // Distance from base joint to lower joint
+//    float l2 = 34; // cm // Distance from lower joint to wrist joint
+//    float l3 = 18; // cm // Distance from wrist to center of gripper
+//    float coneRadius = 2.5; // cm // Radius of cone
+//
+//    float maxRange = l1 + l2 + l3 - lCamera -
+//                     coneRadius; // 76.5 cm // Maximum reach from camera to center of gripper
 
     int smallX = 0;
     int smallY = 0;
     float smallDepth = 0;
 
+    // scan a rectangle around the center of the screen to find the closest point to the camera
     for (int i = height / 2; i < height / 8 * 5; ++i) {
         for (int j = width / 8 * 3; j < width / 8 * 5; ++j) {
             float newDepth = depth.get_distance(j, i);
@@ -299,6 +302,7 @@ Java_org_firstinspires_ftc_teamcode_CameraWrapper_scanForConeJNI(JNIEnv *env, jc
         }
     }
 
+    smallDepth = smallDepth * 100; // convert from meters to cm
     smallX = smallX - width / 2;
     smallY = smallY - height / 2;
 
@@ -315,8 +319,69 @@ Java_org_firstinspires_ftc_teamcode_CameraWrapper_scanForConeJNI(JNIEnv *env, jc
     env->SetDoubleArrayRegion(ret,0,3,arr);
     return ret;
 }
+
+////////////////////////// SCAN FOR POLE ////////////////////////////////////
 extern "C"
 JNIEXPORT jdoubleArray JNICALL
 Java_org_firstinspires_ftc_teamcode_camera_CameraWrapper_scanForPoleJNI(JNIEnv *env, jobject thiz) {
-    // TODO: implement scanForPoleJNI()
+    //ELOG("Scanning for cone CPP %d", __LINE__);
+    rs2::context ctx;
+    int number = ctx.query_devices().size();
+    rs2::pipeline pipe;
+    pipe.start();
+
+    // Block program until frames arrive
+    rs2::frameset frames = pipe.wait_for_frames();
+
+    // Try to get a frame of a depth image
+    rs2::depth_frame depth = frames.get_depth_frame();
+
+    // Get the depth frame's dimensions
+    auto width = depth.get_width();
+    auto height = depth.get_height();
+
+    ELOG("Scanning for cone CPP width %d", width);
+    ELOG("Scanning for cone CPP height %d", height);
+    // Depth output resolution: 1280/720
+    // Depth accuracy: 2% at 50 cm
+    // RGB resolution: 1280/720
+    // RGB frame rate: 90 fps
+    // FOV: H: 87, V: 58 // H: 1.5184, V: 1.0122 // (n * PI) / 180
+
+    int smallX = 0;
+    int smallY = 0;
+    float smallDepth = 0;
+
+    // scan a rectangle around the center of the screen to find the closest point to the camera
+    for (int i = height / 2; i < height / 8 * 5; ++i) {
+        for (int j = width / 8 * 3; j < width / 8 * 5; ++j) {
+            float newDepth = depth.get_distance(j, i);
+            if (smallDepth == 0) {
+                smallDepth = newDepth;
+                smallX = j;
+                smallY = i;
+            } else if (newDepth < smallDepth && newDepth != 0) {
+                smallDepth = newDepth;
+                smallX = j;
+                smallY = i;
+            }
+        }
+    }
+
+    smallDepth = smallDepth * 100; // convert from meters to cm
+    smallX = smallX - width / 2;
+    smallY = smallY - height / 2;
+
+    float arcX = (87 * M_PI) / 180 * smallDepth; // cm // In parallel to the X axis
+    float cmPerPixelX = arcX / width; // cm/pixel
+    float arcY = (59 * M_PI) / 180 * smallDepth; // cm // In line to the Y axis
+    float cmPerPixelY = arcY / height; // cm/pixel
+
+    double x = cmPerPixelX * smallX;
+    double y = cmPerPixelX * smallY;
+    double z = smallDepth;
+    double arr[3]={x,y,z};
+    jdoubleArray ret = env->NewDoubleArray(3);
+    env->SetDoubleArrayRegion(ret,0,3,arr);
+    return ret;
 }
