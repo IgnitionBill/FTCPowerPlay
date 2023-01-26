@@ -60,14 +60,7 @@ public class ArmPose {
         if(Math.abs(currentTarget.th0 - th0) < ANGULAR_THRESHOLD){
             if(Math.abs(currentTarget.th1 - th1) < ANGULAR_THRESHOLD) {
                 if (Math.abs(currentTarget.th2 - th2) < ANGULAR_THRESHOLD) {
-                    if (Math.abs(currentTarget.th3 - th3) < ANGULAR_THRESHOLD) {
-                        if (Math.abs(currentTarget.th4 - th4) < ANGULAR_THRESHOLD) {
-                            if (Math.abs(currentTarget.th5 - th5) < ANGULAR_THRESHOLD) {
-                                if (Math.abs(currentTarget.th6 - th6) < ANGULAR_THRESHOLD)
-                                    return true;
-                            }
-                        }
-                    }
+                   return true; // servos don't count
                 }
             }
         }

@@ -315,3 +315,8 @@ Java_org_firstinspires_ftc_teamcode_CameraWrapper_scanForConeJNI(JNIEnv *env, jc
     env->SetDoubleArrayRegion(ret,0,3,arr);
     return ret;
 }
+extern "C"
+JNIEXPORT jdoubleArray JNICALL
+Java_org_firstinspires_ftc_teamcode_camera_CameraWrapper_scanForPoleJNI(JNIEnv *env, jobject thiz) {
+    // TODO: implement scanForPoleJNI()
+}

@@ -7,13 +7,12 @@ import org.firstinspires.ftc.teamcode.sequence.MotionSequenceDirector;
 import org.firstinspires.ftc.teamcode.sequence.MotionSequenceName;
 import org.firstinspires.ftc.teamcode.system.Actuators;
 import org.firstinspires.ftc.teamcode.system.GamePadState;
+import org.firstinspires.ftc.teamcode.system.Godrick;
 import org.firstinspires.ftc.teamcode.system.Sensors;
 import org.firstinspires.ftc.teamcode.util.UnitOfAngle;
 import org.firstinspires.ftc.teamcode.util.UnitOfDistance;
 import org.firstinspires.ftc.teamcode.util.UtilityKit;
 import org.firstinspires.ftc.teamcode.util.Vector2D;
-
-import java.util.ArrayList;
 
 /**
  * ArmController is the top level of control for the arm.
@@ -36,11 +35,13 @@ public class ArmController {
     // Gear Ratio = 188:1
     // Encoder Shaft = 28 pulses per revolution
     // Gearbox Output = 5281.1 pulses per revolution (*1.4 for small sprocket)
-    public int turnTableTicks = 0;
-    public int lowerTicks = 0;
-    public int baseTicks = 0;
-    public double grabberRotation = 0;
-    public double grabberBend = 0;
+    public int turnTableTicks = 0; // th0
+    public int baseTicks = 0; // th1
+    public int lowerTicks = 0; // th2
+    public double grabberRoll = 0; // roll
+    public double grabberPitch = 0; // pitch
+    public double grabberYaw = 0; // yaw
+    public double grabberGrip = 0; // grip
 
     private final double manualAngleTolerance = 5; // Degrees
     private final double manualPositionTolerance = 5; // CM
@@ -51,16 +52,19 @@ public class ArmController {
 
     private Telemetry telemetry;
 
-
-    ArrayList<ArmPosition> currentSequence;
-    ArrayList<ArmPosition> nextSequence;
-
     StringBuilder sb = new StringBuilder();
     MotionSequenceDirector motionSequenceDirector;
+    Godrick godrick;
+    Sensors sensors;
+    Actuators actuators;
+    GamePadState gamePadState;
 
-    public void initialize(Sensors sensors, Telemetry telemetry) {
-        //TODO: Verify integrity of sequences
-        motionSequenceDirector = new MotionSequenceDirector(sensors, telemetry);
+    public void initialize() {
+        godrick = Godrick.getInstance();
+        sensors = godrick.sensors;
+        actuators = godrick.actuators;
+        gamePadState = godrick.gamePadState;
+        telemetry = godrick.telemetry;
 
         table = sensors.turnData;
         base = sensors.baseData;
@@ -69,13 +73,17 @@ public class ArmController {
         baseHome = false;
         lowerHome = false;
 
-        this.telemetry = telemetry;
         // store the initial position of the arm
         currentSequenceDone = true;
     }
 
-    public void updateArm(GamePadState gamePadState, Actuators actuators, Sensors sensors, boolean verbose) {
+    /**
+     * The update arm function
+     * @param verbose
+     */
+    public void updateArm(boolean verbose) {
         // if the arm is homing: disable normal functions
+
 
         if (armControlMode == ArmControlMode.AUTO_HOME) {
             autoHome(sensors, actuators, verbose);
@@ -91,8 +99,8 @@ public class ArmController {
             telemetry.addData("table target: ", turnTableTicks);
             telemetry.addData("base target: ", baseTicks);
             telemetry.addData("lower target: ", lowerTicks);
-            telemetry.addData("rotate target: ", grabberRotation);
-            telemetry.addData("pitch target: ", grabberBend);
+            telemetry.addData("rotate target: ", grabberRoll);
+            telemetry.addData("pitch target: ", grabberPitch);
         }
     }
 
@@ -166,8 +174,8 @@ public class ArmController {
 
         findAngles(target.getX()+addX, target.getY()+addY);
         turnTableTicks += (int) (turnTableAngle * UtilityKit.ticksPerDegreeAtJoint);
-        grabberBend += addWristBend;
-        grabberRotation += addWristRotation;
+        grabberPitch += addWristBend;
+        grabberRoll += addWristRotation;
     }
 
     private void trueManual(GamePadState gamePadState) {
@@ -234,8 +242,8 @@ public class ArmController {
         turnTableTicks += (int) (turnTableAngle * UtilityKit.ticksPerDegreeAtJoint);
         lowerTicks += (int) (addLowerAngle * UtilityKit.ticksPerDegreeAtJoint);
         baseTicks += (int) (addBaseAngle * UtilityKit.ticksPerDegreeAtJoint);
-        grabberBend += addWristBend;
-        grabberRotation += addWristRotation;
+        grabberPitch += addWristBend;
+        grabberRoll += addWristRotation;
     }
 
     // TODO: coach has checked this and approves it for use with the note below for improvement

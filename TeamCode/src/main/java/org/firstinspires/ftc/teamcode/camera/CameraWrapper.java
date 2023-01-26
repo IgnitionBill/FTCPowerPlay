@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.camera;
 
 import android.content.Context;
 import android.util.Log;
@@ -85,7 +85,15 @@ public class CameraWrapper {
         }
     }
 
-
+    public double[] scanForPole() {
+        if (cameraEnabled) {
+            return scanForPoleJNI();
+        }
+        else {
+            double[] failure = {0.0, 0.0, 0.0};
+            return failure;
+        }
+    }
 
     /**
      * A native method that is implemented by the 'ftcrobotcontroller' native library,
@@ -104,4 +112,6 @@ public class CameraWrapper {
 //    public static native Vector3D vectorToCone();
 
     private native double[] scanForConeJNI();
+
+    private native double[] scanForPoleJNI();
 }

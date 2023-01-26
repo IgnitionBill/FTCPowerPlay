@@ -239,4 +239,9 @@ public class Arm {
         arm.kinematicUpdate();
         // check all numbers
     }
+
+    public Vector3D transformCameraToRobotCoords(Vector3D toCone) {
+        Vector3D mixedUp = new Vector3D(toCone.z, -toCone.x, -toCone.y);
+        return robotToCamera.inverseTransform(mixedUp); // TODO: IS THIS SWITCHING FROM Z OUT TO Z UP?
+    }
 }

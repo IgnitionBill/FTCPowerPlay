@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.drivetrain.MechanumController;
 import org.firstinspires.ftc.teamcode.system.Actuators;
 import org.firstinspires.ftc.teamcode.system.GamePadState;
 import org.firstinspires.ftc.teamcode.drivetrain.MotorController;
@@ -24,7 +25,7 @@ public class GodrickTheDriver extends LinearOpMode {
     //private ArmController armController = new ArmController();
 
     // Create references to control classes
-    private MotorController motorController = new MotorController();
+    private MechanumController mechanumController = new MechanumController();
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -37,7 +38,7 @@ public class GodrickTheDriver extends LinearOpMode {
         //sensoryState.initialize(hardwareMap, telemetry);
         actuators.initializeGodrick(hardwareMap, telemetry);
         sensors.initialize(hardwareMap, telemetry);
-        motorController.initialize(telemetry);
+        mechanumController.initialize(telemetry);
         //armController.initialize(telemetry);
 
         telemetry.addData("Status", "Initialized");
@@ -59,13 +60,13 @@ public class GodrickTheDriver extends LinearOpMode {
             //safetyMonitor.safetyCheck(motorController, sensors);
 
             // update the motor controller state, to make the motors move
-            motorController.simpleMechanumUpdate(gamePadState, sensors, true);
+            mechanumController.simpleMechanumUpdate(gamePadState, sensors, true);
             //motorController.servoUpdate(gamePadState);
             //armController.updateArm(gamePadState, actuators, sensors, true);
             //motorController.godrickArmUpdate(gamePadState, sensors, safetyMonitor, true);
 
             //actuators.updateArm(motorController);
-            actuators.updateDrivetrainMotors(motorController);
+            actuators.updateDrivetrainMotors(mechanumController);
             //actuators.updateServos(motorController);
 
             // display all telemetry updates to the controller, use verbose=true to see reports in telemetry

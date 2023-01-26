@@ -15,7 +15,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.teamcode.CameraWrapper;
+import org.firstinspires.ftc.teamcode.arm.ArmPose;
+import org.firstinspires.ftc.teamcode.camera.CameraWrapper;
 import org.firstinspires.ftc.teamcode.arm.ArmJoint;
 import org.firstinspires.ftc.teamcode.arm.ArmReference;
 import org.firstinspires.ftc.teamcode.util.UnitOfAngle;
@@ -88,6 +89,8 @@ public class Sensors {
     public ArmJoint baseDataB;
     public ArmJoint lowerData;
 
+    public ArmPose currentPose;
+
     private double time = 0;
     private double lastTime = 0;
     private double dt = 0; // the time interval since the last update function call
@@ -102,8 +105,7 @@ public class Sensors {
     public void initialize(HardwareMap hardwareMap, Telemetry telemetry){
 
         this.telemetry = telemetry;
-        Context appContext = hardwareMap.appContext;
-        cameraWrapper = new CameraWrapper(appContext);
+        cameraWrapper = new CameraWrapper(hardwareMap.appContext);
         // TODO: Coach suggests these data elements are a better fit in the ArmController class
         // TODO: Coach suggests not to use the nautical convention here and to use positive and negative values for min and max angles, and call them min and max, min < max is obvious
         //TODO: Set angleOffset to the default angle the joints start at
@@ -112,6 +114,8 @@ public class Sensors {
         baseData = new ArmJoint("BaseJointA", UnitOfAngle.DEGREES, 90, ArmReference.BOW, 80, ArmReference.STERN, 2.4, 28.8, UnitOfDistance.CM);
         baseDataB = new ArmJoint("BaseJointB", UnitOfAngle.DEGREES, 90, ArmReference.BOW, 80, ArmReference.STERN, 2.4, 28.8, UnitOfDistance.CM);
         lowerData = new ArmJoint("LowerJoint", UnitOfAngle.DEGREES, 170, ArmReference.BOW, 0, ArmReference.STERN, -2.4, 28.8, UnitOfDistance.CM);
+
+        currentPose = new ArmPose(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 
         try {
             //TODO: Determine whether IMU is required
@@ -156,6 +160,25 @@ public class Sensors {
             baseDataB.updateSpeed(actuators.baseSegment2.getVelocity());
             turnData.updateSpeed(actuators.turnTable.getVelocity());
 
+            currentPose.setThetas(
+                    turnData.getCurrentAngle(UnitOfAngle.DEGREES),
+                    baseData.getCurrentAngle(UnitOfAngle.DEGREES),
+                    lowerData.getCurrentAngle(UnitOfAngle.DEGREES),
+                    0,
+                    0,
+                    0,
+                    0
+            );
+
+            currentPose.setOmegas(
+                    turnData.getCurrentSpeed(UnitOfAngle.DEGREES),
+                    baseData.getCurrentSpeed(UnitOfAngle.DEGREES),
+                    lowerData.getCurrentSpeed(UnitOfAngle.DEGREES),
+                    0,
+                    0,
+                    0,
+                    0
+            );
             // Set old positions for drivetrain dc motors
             oldFrontLeftPosition = frontLeftPosition;
             oldFrontRightPosition = frontRightPosition;
@@ -205,11 +228,6 @@ public class Sensors {
                 telemetry.addData("Base: ", actuators.baseSegment.getCurrentPosition());
                 telemetry.addData("BaseB: ", actuators.baseSegment2.getCurrentPosition());
                 telemetry.addData("Lower: ", actuators.lowerSegment.getCurrentPosition());
-
-                telemetry.addData("rotate: ", actuators.grabberRotationServo.getPosition());
-                telemetry.addData("pitch: ", actuators.grabberBendServo.getPosition());
-                telemetry.addData("pincerA: ", actuators.grabberServo.getPosition());
-                telemetry.addData("PincerB: ", actuators.grabberServo2.getPosition());
 
                 // buttons
                 telemetry.addData("lower limit A: ", lowerA);
