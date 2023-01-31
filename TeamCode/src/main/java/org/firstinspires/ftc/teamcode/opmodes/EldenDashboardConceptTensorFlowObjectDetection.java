@@ -65,7 +65,8 @@ public class EldenDashboardConceptTensorFlowObjectDetection extends LinearOpMode
      * has been downloaded to the Robot Controller's SD FLASH memory, it must to be loaded using loadModelFromFile()
      * Here we assume it's an Asset.    Also see method initTfod() below .
      */
-    private static final String TFOD_MODEL_ASSET = "PowerPlayEldenParking.tflite";
+    private static final String TFOD_MODEL_ASSET = "PowerPlayEldenParkLeague-v1.tflite";
+    //private static final String TFOD_MODEL_ASSET = "PowerPlayEldenParking.tflite";
     // private static final String TFOD_MODEL_FILE  = "/sdcard/FIRST/tflitemodels/CustomTeamModel.tflite";
 
     private static final String[] LABELS = {
