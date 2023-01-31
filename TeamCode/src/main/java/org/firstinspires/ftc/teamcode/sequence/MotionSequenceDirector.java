@@ -26,13 +26,15 @@ public class MotionSequenceDirector {
     Sensors sensors;
     MotionSequence currentSequence;
     Godrick godrick;
-    ArmPose currentPose;
     ArmController armController;
 
     public MotionSequenceDirector() {
-        godrick = Godrick.getInstance();
+
+    }
+
+    public void initialize(Godrick godrick){
+        this.godrick = godrick;
         sensors = godrick.sensors;
-        currentPose = godrick.sensors.currentPose;
         armController = godrick.armController;
     }
 
@@ -44,6 +46,7 @@ public class MotionSequenceDirector {
         }
 
         // if we reached the target position
+        ArmPose currentPose = godrick.arm.getCurrentPose();
         if(currentPose.closeTo(currentSequence.currentTarget())){
             // change to the next target, unless there is no next target, then the sequence is done
             if(!currentSequence.nextTarget()){
@@ -53,17 +56,26 @@ public class MotionSequenceDirector {
         }
 
         // update the motion of the arm by moving further toward currentTarget
-        armController.turnTableTicks = (int) (currentSequence.currentTarget().th0 * UtilityKit.ticksPerDegreeAtJoint);
-        armController.baseTicks = (int) (currentSequence.currentTarget().th1 * UtilityKit.ticksPerDegreeAtJoint);
-        armController.lowerTicks = (int) (currentSequence.currentTarget().th2 * UtilityKit.ticksPerDegreeAtJoint);
-        armController.grabberRoll = currentSequence.currentTarget().th3;
-        armController.grabberYaw = currentSequence.currentTarget().th4;
-        armController.grabberPitch = currentSequence.currentTarget().th5;
-        armController.grabberGrip = currentSequence.currentTarget().th6;
+        StringBuilder sb = new StringBuilder();
+        sb.append(" Th0: " + currentSequence.currentTarget().th0);
+        sb.append(" Th1: " + currentSequence.currentTarget().th1);
+        sb.append(" Th2: " + currentSequence.currentTarget().th2);
+        sb.append(" Th3: " + currentSequence.currentTarget().th3);
+        Log.e("MotionSequenceDirector", "NE: Moving arm " + sb.toString());
+
+        // Update the arm angles
+        godrick.arm.turntable.setTargetAngle(currentSequence.currentTarget().th0);
+        godrick.arm.baseJointA.setTargetAngle(currentSequence.currentTarget().th1);
+        godrick.arm.baseJointB.setTargetAngle(currentSequence.currentTarget().th1);
+        godrick.arm.elbowJoint.setTargetAngle(currentSequence.currentTarget().th2);
+        godrick.arm.grabberRoll = currentSequence.currentTarget().th3;
+        godrick.arm.grabberYaw = currentSequence.currentTarget().th4;
+        godrick.arm.grabberPitch = currentSequence.currentTarget().th5;
+        godrick.arm.grabberGrip = currentSequence.currentTarget().th6;
     }
 
     public void requestNewSequence(MotionSequenceName sequenceName){
-        Log.e("MotionSequenceDirector", "requestNewSequence");
+        Log.e("MotionSequenceDirector", "requestNewSequence " + sequenceName.toString());
         // if the current sequence is done, try to perform the requested sequence
         if(currentSequence == null) {
             switch (sequenceName){
@@ -119,7 +131,7 @@ public class MotionSequenceDirector {
     }
 
     private void tryToPlace(){
-        Log.e("ArmController", "Trying to grab a cone");
+        Log.e("ArmController", "Trying to place a cone");
         // distance scan for a cone roughly straight ahead
         double[] position = sensors.cameraWrapper.scanForPole();
         if(position == null){
@@ -131,7 +143,7 @@ public class MotionSequenceDirector {
 
         // if a target was not found, then give up
         if(toCone.z == 0){
-            Log.e("MotionSequenceDirector", "Cone not found");
+            Log.e("MotionSequenceDirector", "Pole not found");
             return;
         }
 
@@ -139,12 +151,12 @@ public class MotionSequenceDirector {
         Vector3D theCone = godrick.arm.transformCameraToRobotCoords(toCone);
 
         if(theCone.x > 76.5){
-            Log.e("MotionSequenceDirector", "Cone too far");
+            Log.e("MotionSequenceDirector", "Pole too far");
             return;
         }
 
         if(theCone.x < 30){
-            Log.e("MotionSequenceDirector", "Cone too close");
+            Log.e("MotionSequenceDirector", "Pole too close");
             return;
         }
 
@@ -157,10 +169,13 @@ public class MotionSequenceDirector {
     }
 
     private void goCarry(){
+        //
+        Log.e("MotionSequenceDirector", "HomeToCarry");
         currentSequence = new HomeToCarry();
     }
 
     private void goHome(){
+        Log.e("ArmController", "CarryToHome");
         currentSequence = new CarryToHome();
     }
 }

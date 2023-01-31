@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.arm;
 
-
 public class ArmPose {
     public double th0; // turn table
     public double th1; // base joint

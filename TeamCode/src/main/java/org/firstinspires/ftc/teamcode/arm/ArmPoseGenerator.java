@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.arm;
 
+import org.checkerframework.checker.units.qual.A;
 import org.firstinspires.ftc.teamcode.util.CylindricalVector3D;
 import org.firstinspires.ftc.teamcode.util.Vector3D;
 
@@ -11,6 +12,7 @@ public class ArmPoseGenerator {
     public static ArmPose home = new ArmPose(45.0, -85.0, 170.0, 45.0, 10.0, -90.0, 300.0);
     public static ArmPose carry = new ArmPose(0.0, -45.0, 135.0, 0.0, 0.0, 0.0, 300.0);
     public static ArmPose up = new ArmPose(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+    public static ArmPose coneRead = new ArmPose(0.0, -10.0, 170.0, 0.0, 0.0, -90.0, 300.0);
 
     /**
      * This method will construct an ArmPose where the gripper is centered on the target.

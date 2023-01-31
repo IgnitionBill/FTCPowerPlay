@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class JointController {
@@ -29,12 +30,13 @@ public class JointController {
     public void setTarget(int ticks) {dcMotor.setTargetPosition(ticks);}
     public void  setMode() {dcMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);}
     public void setPower(double power) {dcMotor.setPower(power);}
-    public void setVelocity(double ticksPS) {dcMotor.setVelocity(ticksPS);}
+    public void setVelocity(double ticksPS) {dcMotor.setVelocity(ticksPS);} // in ticks per second
     public boolean isAtTarget() {return atTarget;}
     public double getVelocity() { // Returns in ticks
         return dcMotor.getVelocity();
-    }
+    } // in ticks per second
     public int getCurrentPosition() { // Returns in ticks
         return dcMotor.getCurrentPosition();
     }
+    public void reverse() {dcMotor.setDirection(DcMotorSimple.Direction.REVERSE);}
 }

@@ -11,14 +11,15 @@ public class GodrickTheOpMode extends LinearOpMode {
 
     // Create general variables
     private ElapsedTime runtime = new ElapsedTime();
-    private Godrick godrick = Godrick.getInstance();
+    private Godrick godrick = new Godrick();
 
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry.addData("Status", "Starting...");
+
         telemetry.update();
 
-        godrick.initialize(hardwareMap, telemetry);
+        godrick.initialize(hardwareMap, gamepad1, telemetry);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();

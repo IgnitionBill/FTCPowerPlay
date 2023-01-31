@@ -2,6 +2,9 @@ package org.firstinspires.ftc.teamcode.system;
 
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gamepad1;
 
+import android.util.Log;
+
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.checkerframework.checker.units.qual.C;
@@ -16,40 +19,70 @@ import org.firstinspires.ftc.teamcode.sequence.MotionSequenceDirector;
  * The robot holds convenient references to everything.
  */
 public class Godrick {
-    public MotionSequenceDirector motionSequenceDirector = new MotionSequenceDirector();
-    public MechanumController mechanumController = new MechanumController();
-    public Arm arm = new Arm();
-    public GamePadState gamePadState = new GamePadState();
-    public Actuators actuators = new Actuators();
-    public Sensors sensors = new Sensors();
-    public ArmController armController = new ArmController();
-    public ArmPoseGenerator definedArmPositions = new ArmPoseGenerator();
+//    INSTANCE;
 
+    public MotionSequenceDirector motionSequenceDirector;
+    public MechanumController mechanumController;
+    public Arm arm;
+    public GamePadState gamePadState;
+    public Actuators actuators;
+    public Sensors sensors;
+    public ArmController armController;
+    public ArmPoseGenerator definedArmPositions;
+
+    public Gamepad gamepad1;
     public HardwareMap hardwareMap;
     public Telemetry telemetry;
 
-    private static final Godrick instance = new Godrick();
+    //private static final Godrick instance = new Godrick();
 
-    // private constructor to avoid client applications using the constructor
-    private Godrick(){}
-
-    public static Godrick getInstance() {
-        return instance;
+//     private constructor to avoid client applications using the constructor
+    public Godrick(){
+        Log.d("Godrick", "Constructing");
+        try {
+            motionSequenceDirector = new MotionSequenceDirector();
+            mechanumController = new MechanumController();
+            arm = new Arm();
+            sensors = new Sensors();
+            actuators = new Actuators();
+            gamePadState = new GamePadState();
+            armController = new ArmController();
+            definedArmPositions = new ArmPoseGenerator();
+        }
+        catch (Exception e){
+            Log.e("Godrick", e.toString());
+            return;
+        }
+        Log.d("Godrick", "Construction Completed");
     }
 
-    public static void initialize(HardwareMap hardwareMap, Telemetry telemetry){
-        Godrick r = getInstance();
-        r.hardwareMap = hardwareMap;
-        r.telemetry = telemetry;
+//    public static Godrick getInstance() {
+//        return instance;
+//    }
 
-        // Initialize the hardware variables. Note that the strings used here as parameters
-        // to 'get' must correspond to the names assigned during the robot configuration
-        // step (using the FTC Robot Controller app on the phone).
-        r.actuators.initializeGodrick(hardwareMap, telemetry);
-        r.sensors.initialize(hardwareMap, telemetry);
-        r.mechanumController.initialize(telemetry);
-        r.armController.initialize();
-        r.gamePadState.initialize(telemetry);
+    public void initialize(HardwareMap hardwareMap, Gamepad gamepad1, Telemetry telemetry){
+        try{
+            Log.e("Godrick", "Initializing");
+            this.hardwareMap = hardwareMap;
+            this.telemetry = telemetry;
+            this.gamepad1 = gamepad1;
+
+            // JUST STRUGGLING TO SURVIVE...
+            // Initialize the hardware variables. Note that the strings used here as parameters
+            // to 'get' must correspond to the names assigned during the robot configuration
+            // step (using the FTC Robot Controller app on the phone).
+            actuators.initializeGodrick(this);
+            sensors.initialize(this);
+            mechanumController.initialize(telemetry);
+            armController.initialize(this);
+            gamePadState.initialize(telemetry);
+            motionSequenceDirector.initialize(this);
+        }
+        catch (Exception e){
+            Log.e("Godrick", e.toString());
+            return;
+        }
+        Log.d("Godrick", "initialize Completed");
     }
 
     public void update(){
@@ -61,7 +94,7 @@ public class Godrick {
         sensors.update(actuators, true);
 
         // update the arm
-        armController.updateArm(false);
+        armController.updateArm(true);
 
         // update the drivetrain
         mechanumController.simpleMechanumUpdate(gamePadState, sensors, false);

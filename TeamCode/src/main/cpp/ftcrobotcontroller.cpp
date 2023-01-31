@@ -36,8 +36,7 @@ Java_org_firstinspires_ftc_teamcode_CameraWrapper_cameraStringFromJNI(JNIEnv *en
 }
 extern "C"
 JNIEXPORT jstring JNICALL
-Java_org_firstinspires_ftc_teamcode_CameraWrapper_nGetLibrealsenseVersionFromJNI(JNIEnv *env,
-                                                                                 jclass clazz) {
+Java_org_firstinspires_ftc_teamcode_CameraWrapper_nGetLibrealsenseVersionFromJNI(JNIEnv *env, jclass clazz) {
     return (*env).NewStringUTF(RS2_API_VERSION_STR);
 }
 extern "C"
@@ -146,108 +145,12 @@ Java_org_firstinspires_ftc_teamcode_CameraWrapper_recordWithCameraViaJNI(JNIEnv 
         std::cerr << e.what() << std::endl;
         return;
     }
-
-//    void metadata_to_csv(const rs2::frame& frm, const std::string& filename)
-//    {
-//        std::ofstream csv;
-//
-//        csv.open(filename);
-//
-//        //    std::cout << "Writing metadata to " << filename << endl;
-//        csv << "Stream," << rs2_stream_to_string(frm.get_profile().stream_type()) << "\nMetadata Attribute,Value\n";
-//
-//        // Record all the available metadata attributes
-//        for (size_t i = 0; i < RS2_FRAME_METADATA_COUNT; i++)
-//        {
-//            if (frm.supports_frame_metadata((rs2_frame_metadata_value)i))
-//            {
-//                csv << rs2_frame_metadata_to_string((rs2_frame_metadata_value)i) << ","
-//                    << frm.get_frame_metadata((rs2_frame_metadata_value)i) << "\n";
-//            }
-//        }
-//
-//        csv.close();
-//    }
 }
-
-//extern "C"
-//JNIEXPORT jobject JNICALL
-//Java_org_firstinspires_ftc_teamcode_CameraWrapper_vectorToCone(JNIEnv *env, jobject thiz) {
-//    rs2::context ctx;
-//    int number = ctx.query_devices().size();
-//    rs2::pipeline pipe;
-//    pipe.start();
-//
-//    // Block program until frames arrive
-//    rs2::frameset frames = pipe.wait_for_frames();
-//
-//    // Try to get a frame of a depth image
-//    rs2::depth_frame depth = frames.get_depth_frame();
-//
-//    // Get the depth frame's dimensions
-//    auto width = depth.get_width();
-//    auto height = depth.get_height();
-//
-//    // Depth output resolution: 1280/720
-//    // Depth accuracy: 2% at 50 cm
-//    // RGB resolution: 1280/720
-//    // RGB frame rate: 90 fps
-//    // FOV: H: 87, V: 58 // H: 1.5184, V: 1.0122 // (n * PI) / 180
-//
-//    float lCamera = 6.5; // cm // X distance to camera from base joint
-//    float l0 = 12.5; // cm // X distance from center to base joint
-//    float l1 = 33.5; // cm // Distance from base joint to lower joint
-//    float l2 = 34; // cm // Distance from lower joint to wrist joint
-//    float l3 = 18; // cm // Distance from wrist to center of gripper
-//    float coneRadius = 2.5; // cm // Radius of cone
-//
-//    float maxRange = l1 + l2 + l3 - lCamera - coneRadius; // 76.5 cm // Maximum reach from camera to center of gripper
-//
-//    int smallX = 0;
-//    int smallY = 0;
-//    float smallDepth = 0;
-//
-//    for (int i = height/2; i < height/8*5; ++i) {
-//        for (int j = width/8*3; j < width/8*5; ++j) {
-//            float newDepth = depth.get_distance(j, i);
-//            if (smallDepth == 0) {
-//                smallDepth = newDepth;
-//                smallX = j;
-//                smallY = i;
-//            }
-//            else if (newDepth < smallDepth && newDepth != 0) {
-//                smallDepth = newDepth;
-//                smallX = j;
-//                smallY = i;
-//            }
-//        }
-//    }
-//
-//    smallX = smallX-width/2;
-//    smallY = smallY-height/2;
-//
-//    float arcX = (87*M_PI)/180*smallDepth; // cm // In parallel to the X axis
-//    float cmPerPixelX = arcX/width; // cm/pixel
-//    float arcY = (59*M_PI)/180*smallDepth; // cm // In line to the Y axis
-//    float cmPerPixelY = arcY/height; // cm/pixel
-//
-//    float centimeterOffsetInXAxisForTheGloryOfEndermanRap = cmPerPixelX*smallX;
-//    float centimeterOffsetInYAxisForTheGloryOfRapEnderman = cmPerPixelX*smallY;
-//
-//    double x = centimeterOffsetInXAxisForTheGloryOfEndermanRap;
-//    double y = centimeterOffsetInYAxisForTheGloryOfRapEnderman;
-//    double z = smallDepth;
-//
-//    jclass vector3D = (*env).FindClass("org/firstinspires/ftc/teamcode/util/Vector3D");
-//    jmethodID constructor = (*env).GetMethodID(vector3D, "Vector3D", "(DDD)V");
-//
-//    return (*env).NewObject(vector3D, constructor, x, y, z);
-//}
 
 /////////////////////////////  SCAN FOR CONE //////////////////////////////////////
 extern "C"
 JNIEXPORT jdoubleArray JNICALL
-Java_org_firstinspires_ftc_teamcode_CameraWrapper_scanForConeJNI(JNIEnv *env, jclass clazz) {
+Java_org_firstinspires_ftc_teamcode_CameraWrapper_scanForConeJNI(JNIEnv *env, jobject thiz) {
     //ELOG("Scanning for cone CPP %d", __LINE__);
     rs2::context ctx;
     int number = ctx.query_devices().size();
@@ -287,23 +190,24 @@ Java_org_firstinspires_ftc_teamcode_CameraWrapper_scanForConeJNI(JNIEnv *env, jc
     float smallDepth = 0;
 
     // scan a rectangle around the center of the screen to find the closest point to the camera
-    for (int i = height / 2; i < height / 8 * 5; ++i) {
-        for (int j = width / 8 * 3; j < width / 8 * 5; ++j) {
-            float newDepth = depth.get_distance(j, i);
+    for (int j = height / 2; j < height; ++j) { // down to up
+        for (int i = width * 3 / 8; i < width * 5 / 8; ++i) { // left to right
+            float newDepth = depth.get_distance(i, j);
             if (smallDepth == 0) {
                 smallDepth = newDepth;
-                smallX = j;
-                smallY = i;
+                smallX = i;
+                smallY = j;
             } else if (newDepth < smallDepth && newDepth != 0) {
                 smallDepth = newDepth;
-                smallX = j;
-                smallY = i;
+                smallX = i;
+                smallY = j;
             }
         }
     }
 
     smallDepth = smallDepth * 100; // convert from meters to cm
     smallX = smallX - width / 2;
+    smallY = height - smallY;  // reverse axis
     smallY = smallY - height / 2;
 
     float arcX = (87 * M_PI) / 180 * smallDepth; // cm // In parallel to the X axis
@@ -320,10 +224,11 @@ Java_org_firstinspires_ftc_teamcode_CameraWrapper_scanForConeJNI(JNIEnv *env, jc
     return ret;
 }
 
-////////////////////////// SCAN FOR POLE ////////////////////////////////////
+//////////////////////////// SCAN FOR POLE ////////////////////////////////////
 extern "C"
 JNIEXPORT jdoubleArray JNICALL
-Java_org_firstinspires_ftc_teamcode_camera_CameraWrapper_scanForPoleJNI(JNIEnv *env, jobject thiz) {
+Java_org_firstinspires_ftc_teamcode_CameraWrapper_scanForPoleJNI(JNIEnv *env, jobject thiz) {
+
     //ELOG("Scanning for cone CPP %d", __LINE__);
     rs2::context ctx;
     int number = ctx.query_devices().size();
@@ -348,29 +253,42 @@ Java_org_firstinspires_ftc_teamcode_camera_CameraWrapper_scanForPoleJNI(JNIEnv *
     // RGB frame rate: 90 fps
     // FOV: H: 87, V: 58 // H: 1.5184, V: 1.0122 // (n * PI) / 180
 
-    int smallX = 0;
+    int smallX = 0; // position of the closest point
     int smallY = 0;
     float smallDepth = 0;
+    int lastX = 0;
+    int lastY = 0;
+    float lastDepth = 30;
 
     // scan a rectangle around the center of the screen to find the closest point to the camera
-    for (int i = height / 2; i < height / 8 * 5; ++i) {
-        for (int j = width / 8 * 3; j < width / 8 * 5; ++j) {
-            float newDepth = depth.get_distance(j, i);
+    for (int j = height / 2; j < height; ++j) { // down to up
+        for (int i = width * 3 / 8; i < width * 5 / 8; ++i) { // left to right
+            float newDepth = depth.get_distance(i, j);
             if (smallDepth == 0) {
                 smallDepth = newDepth;
-                smallX = j;
-                smallY = i;
+                smallX = i;
+                smallY = j;
             } else if (newDepth < smallDepth && newDepth != 0) {
                 smallDepth = newDepth;
-                smallX = j;
-                smallY = i;
+                smallX = i;
+                smallY = j;
             }
         }
+        // if the closest point on the line is much farther than the closest point on the last line,
+        if(smallDepth > lastDepth + .005){
+            // we have found the top and center
+            break;
+        }
+        // store the closest point on the line
+        lastX = smallX;
+        lastY = smallY;
+        lastDepth = smallDepth;
     }
 
-    smallDepth = smallDepth * 100; // convert from meters to cm
-    smallX = smallX - width / 2;
-    smallY = smallY - height / 2;
+    smallDepth = lastDepth * 100; // convert from meters to cm
+    smallX = lastX - width / 2; // shift to the center of the screen
+    smallY = height - smallY;  // reverse axis
+    smallY = lastY - height / 2; // shift to the center of the screen
 
     float arcX = (87 * M_PI) / 180 * smallDepth; // cm // In parallel to the X axis
     float cmPerPixelX = arcX / width; // cm/pixel

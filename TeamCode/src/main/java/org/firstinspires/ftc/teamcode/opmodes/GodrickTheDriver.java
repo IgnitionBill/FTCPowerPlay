@@ -8,6 +8,7 @@ import org.firstinspires.ftc.teamcode.drivetrain.MechanumController;
 import org.firstinspires.ftc.teamcode.system.Actuators;
 import org.firstinspires.ftc.teamcode.system.GamePadState;
 import org.firstinspires.ftc.teamcode.drivetrain.MotorController;
+import org.firstinspires.ftc.teamcode.system.Godrick;
 import org.firstinspires.ftc.teamcode.system.Sensors;
 
 @TeleOp(name="GodrickTheDriver", group = "FullOpMode")
@@ -18,6 +19,7 @@ public class GodrickTheDriver extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
     // Create references to sensor classes
+    Godrick godrick = new Godrick();
     private GamePadState gamePadState = new GamePadState();
     private Actuators actuators = new Actuators();
     private Sensors sensors = new Sensors();
@@ -31,13 +33,14 @@ public class GodrickTheDriver extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         telemetry.addData("Status", "Starting...");
         telemetry.update();
+        godrick.initialize(hardwareMap, gamepad1,telemetry);
 
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
         //sensoryState.initialize(hardwareMap, telemetry);
-        actuators.initializeGodrick(hardwareMap, telemetry);
-        sensors.initialize(hardwareMap, telemetry);
+        actuators.initializeGodrick(godrick);
+        sensors.initialize(godrick);
         mechanumController.initialize(telemetry);
         //armController.initialize(telemetry);
 

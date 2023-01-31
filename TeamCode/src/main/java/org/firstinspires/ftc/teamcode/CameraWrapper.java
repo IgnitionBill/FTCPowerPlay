@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.camera;
+package org.firstinspires.ftc.teamcode;
 
 import android.content.Context;
 import android.util.Log;
@@ -108,8 +108,6 @@ public class CameraWrapper {
     private native void testMulticamFromJNI();
 
     private native void recordWithCameraViaJNI(int sec);
-
-//    public static native Vector3D vectorToCone();
 
     private native double[] scanForConeJNI();
 

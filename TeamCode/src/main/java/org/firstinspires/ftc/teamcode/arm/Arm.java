@@ -5,60 +5,54 @@ import org.firstinspires.ftc.teamcode.util.CylindricalVector3D;
 import org.firstinspires.ftc.teamcode.util.Matrix3x3;
 import org.firstinspires.ftc.teamcode.util.Vector3D;
 
+import java.net.PortUnreachableException;
+
 /**
- * Robot stats and data are stored here
- * Standard physical calculations of the robot are done here too
- * Robot coordinates are cylindrical coordinates specified relative to the center of the drivetrain.
- * The forward facing direction of the robot turntable will be the direction of r, as measured from the center
- * of the turntable.
+ * Robot arm stats and data are stored here
+ * Standard physical calculations of the robot arm are done here too
+ * Robot coordinates are relative to the center of the drivetrain at floor level.
+ * Forward is x, left is y, up is z.
  * The angle of the turntable facing relative to the field start position, will be the polar angle.
- * The height above the field will the z direction.
  */
 public class Arm {
-    // length of each arm segment
+    // lengths of each arm segment
     public final static double top = 10.2; // top of the turntable
     public final static double L0R = 12.5; // radial distance to the center of the first joint from the origin of robot:(12.5 cm, alpha, 23.0 cm)
     public final static double L0Z = 23.0; // height of the first joint above the floor
-//    public final static double L0 = Math.sqrt(L0R*L0R + L0Z*L0Z); // length from origin to first joint
     public final static double L1 = 34.0;  // cm, length of first segment
     public final static double L2 = 11.0; // cm, length of second segment
+    public final static double L2X = -2.4;
     public final static double L3 = 20.66; // cm, length of the third segment
     public final static double L4 = 2.84; // cm, length of the fourth segment
-//    public final static double L5R = 8.0; // the forward displacement of the center of the gripper relative to the joint 5
-//    public final static double L5RTH = 9.0; // the rightward displacement to the center of the gripper relative to J5
-//    public final static double L34 = L3 + L4;
     public final static double LCAM = 6.2; // length from joint 5 to camera face
     public final static double LGRIPZ = 8.0; // forward length from joint 5 to the center of the gripper
     public final static double LGRIPX = -9.0; // leftward distance from joint 5 to the center of the gripper
 
-    ArmPose currentPos = new ArmPose(0, 0, 0, 0, 0, 0, 0);
+    public final static double MIN_TH0 = -180;
+    public final static double MAX_TH0 = 180;
+    public final static double MIN_TH1 = -Math.toDegrees(Math.atan2(33.0, 39.0)); // about -74.7 degrees
+    public final static double MAX_TH1 = 90;
+    public final static double MIN_TH2 = 0;
+    public final static double MAX_TH2 = 175;
 
-//    // location of the turntable top center in robot coordinates
-//    CylindricalVector3D j0 = new CylindricalVector3D();
-//
-//    // location of the center of the base joint in robot coordinates
-//    CylindricalVector3D j1 = new CylindricalVector3D();
-//
-//    // location of the center of the elbow joint in robot coordinates
-//    CylindricalVector3D j2 = new CylindricalVector3D();
-//
-//    // location of the center of the wrist joint in robot coordinates
-//    CylindricalVector3D j5 = new CylindricalVector3D();
-//
-//    CylindricalVector3D cameraPosition = new CylindricalVector3D();
-//
-//    CylindricalVector3D gripPosition = new CylindricalVector3D();
-//
-//    // get the camera facing, a normal vector
-//    CylindricalVector3D cameraNormal = new CylindricalVector3D();
-//
-//    // camera normal in cartesian coordinates
-//    Vector3D cameraNormalCart = new Vector3D();
+    // ARM JOINTS RUN BY DC MOTORS
+    public DCArmJoint baseJointA = new DCArmJoint(MIN_TH1, MAX_TH1, MIN_TH1);
+    public DCArmJoint baseJointB = new DCArmJoint(MIN_TH1, MAX_TH1, MIN_TH1);
+    public DCArmJoint turntable = new DCArmJoint(MIN_TH0, MAX_TH0, -45);
+    public DCArmJoint elbowJoint = new DCArmJoint(MIN_TH2, MAX_TH2, MAX_TH2);
 
-    // Segment vectors, where x is forward, y is left, z is up
+    public double grabberRoll = 0; // roll
+    public double grabberPitch = 0; // pitch
+    public double grabberYaw = 0; // yaw
+    public double grabberGrip = 0; // grip
+
+    // The angles of each arm joint as measured from straight being 0 degrees
+    private ArmPose currentPos = new ArmPose(0, 0, 0, 0, 0, 0, 0);
+
+    // Arm segments represented as vectors
     Vector3D l0 = new Vector3D(L0R, 0, L0Z);
-    Vector3D l1 = new Vector3D(0, 0, L1);
-    Vector3D l2 = new Vector3D(0, 0, L2);
+    Vector3D l1 = new Vector3D(L2X, 0, L1);
+    Vector3D l2 = new Vector3D(-L2X, 0, L2);
     Vector3D l3 = new Vector3D(0, 0, L3);
     Vector3D l4 = new Vector3D(0, 0, L4);
     Vector3D lCam = new Vector3D(0, 0, LCAM);
@@ -72,6 +66,7 @@ public class Arm {
     Vector3D u4 = new Vector3D(0, 0, 1); // up
     Vector3D u5 = new Vector3D(0, 1, 0); // left
 
+    // rotation matrix of each joint
     Matrix3x3 r0 = new Matrix3x3();
     Matrix3x3 r1 = new Matrix3x3();
     Matrix3x3 r2 = new Matrix3x3();
@@ -79,6 +74,7 @@ public class Arm {
     Matrix3x3 r4 = new Matrix3x3();
     Matrix3x3 r5 = new Matrix3x3();
 
+    // the center of each joint in robot coordinates
     Vector3D p0;
     Vector3D p1;
     Vector3D p2;
@@ -87,6 +83,7 @@ public class Arm {
     Vector3D pGrip;
     Vector3D pCam;
 
+    // the coordinate transformation for each arm segment
     CoordinateTransformation c0;
     CoordinateTransformation c1;
     CoordinateTransformation c2;
@@ -95,8 +92,22 @@ public class Arm {
     CoordinateTransformation cCam;
     CoordinateTransformation cGrip;
 
+    // combined coordinate transformations that take you from the robot to the camera or gripper... or back
     CoordinateTransformation robotToCamera = new CoordinateTransformation();
     CoordinateTransformation robotToGripper = new CoordinateTransformation();
+
+    public ArmPose getCurrentPose(){
+        return new ArmPose(
+                turntable.getAngle(),
+                baseJointA.getAngle(),
+                elbowJoint.getAngle(),
+                grabberRoll,
+                grabberYaw,
+                grabberPitch,
+                grabberGrip
+                );
+    }
+
     /**
      * The kinematic update takes motor encoder- or rotary encoder-read joint angles and
      * Robot parameters to calculate the positions and orientation of each arm segment,
@@ -191,47 +202,6 @@ public class Arm {
         robotToCamera = t.mergeToCombine(cCam);
         robotToGripper = t.mergeToCombine(cGrip);
     }
-
-//    public void update(){
-//        // location of the turntable top center in robot coordinates
-//        j0.set(0.0, theta+currentPos.th0, top);
-//        // location of the center of the base joint in robot coordinates
-//        j1.set(L0R, j0.theta, L0Z);
-//        // location of the center of the elbow joint in robot coordinates
-//        j2.set(j1.rho + L1 * Math.sin(Math.toRadians(currentPos.th1)),
-//                j1.theta,
-//                j1.z + L1 * Math.cos(Math.toRadians(currentPos.th1)));
-//        // location of the center of the wrist joint in robot coordinates
-//        j5.set(j2.rho + L34 * Math.sin(Math.toRadians(currentPos.th2+currentPos.th1)),
-//                j2.theta,
-//                j2.z + L34 * Math.cos(Math.toRadians(currentPos.th2+currentPos.th1)));
-//        cameraPosition.set(j5.rho + LCAM * Math.sin(Math.toRadians(currentPos.th5+currentPos.th2+currentPos.th1)),
-//                j5.theta,
-//                j5.z + LCAM * Math.cos(Math.toRadians(currentPos.th5+currentPos.th2+currentPos.th1)));
-//
-//        gripPosition.set(
-//                j5.rho + L5R * Math.sin(Math.toRadians(currentPos.th5+currentPos.th2+currentPos.th1)) ,
-//                j5.theta + L5RTH / gripPosition.rho,
-//                j5.z + L5R * Math.cos(Math.toRadians(currentPos.th5+currentPos.th2+currentPos.th1)));
-//
-//        // this is the camera's normal vector
-//        cameraNormal.set(
-//                Math.sin(Math.toRadians(currentPos.th1 + currentPos.th2 + currentPos.th5)),
-//                j5.theta,
-//                Math.cos(Math.toRadians(currentPos.th1 + currentPos.th2 + currentPos.th5)));
-//
-//        // camera normal in cartesian coordinates, centered on the robot
-//        cameraNormalCart = cameraNormal.toCartesian();
-//
-//    }
-//
-//    public CylindricalVector3D transformFromCameraToRobotCoordinates(Vector3D v){
-//        // transform the target vector v from camera coordinates to robot coordinates
-//        Vector3D vTransformed = new Vector3D(cameraNormalCart.x * v.z, cameraNormalCart.y, cameraNormalCart.z );
-//
-//        // sum the camera vector with the target vector to get the target vector in robot coordinates
-//        return new CylindricalVector3D();
-//    }
 
     public static void test(){
         Arm arm = new Arm(); // can be a singleton

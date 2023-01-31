@@ -13,6 +13,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.teamcode.drivetrain.DriveMove;
 import org.firstinspires.ftc.teamcode.drivetrain.MechanumController;
+import org.firstinspires.ftc.teamcode.system.Godrick;
 import org.firstinspires.ftc.teamcode.system.Sensors;
 import org.firstinspires.ftc.teamcode.util.UnitOfAngle;
 import org.firstinspires.ftc.teamcode.util.UnitOfDistance;
@@ -27,6 +28,7 @@ public class GodrickTheParking extends LinearOpMode {
 
     // Create general variables
     private ElapsedTime runtime = new ElapsedTime();
+    Godrick godrick = new Godrick();
 
     private static final String TFOD_MODEL_ASSET = "GOOSE2.tflite";
 
@@ -44,8 +46,9 @@ public class GodrickTheParking extends LinearOpMode {
     private TFObjectDetector tfod;
 
     public void runOpMode() throws InterruptedException {
+        godrick.initialize(hardwareMap, gamepad1, telemetry);
         Sensors sensors = new Sensors();
-        sensors.initialize(hardwareMap, telemetry);
+        sensors.initialize(godrick);
 
         initVuforia();
        // initTfod();
