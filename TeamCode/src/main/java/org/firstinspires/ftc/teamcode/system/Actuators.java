@@ -126,11 +126,14 @@ public class Actuators {
     }
 
     public void updateArm(ArmController armController, Sensors sensors) {
+        StringBuilder sb = new StringBuilder();
 
         turnTable.setTarget(godrick.arm.turntable.getTargetTicks());
         baseSegment.setTarget(godrick.arm.baseJointA.getTargetTicks());
         baseSegment2.setTarget(godrick.arm.baseJointB.getTargetTicks());
         lowerSegment.setTarget(godrick.arm.elbowJoint.getTargetTicks());
+        sb.append(turnTable.deviceName + " current: ");
+        sb.append(turnTable.getCurrentPosition());
 
         // GoBilda 2000-0025-0002 300 degree max rotation
         rollServo.setPosition((1/150.0) * godrick.arm.grabberRoll+.5);
@@ -146,12 +149,12 @@ public class Actuators {
 
     }
 
-    public void updateServos(MotorController motorController) {
-        if (motorController.grabberRelease) {
-            grabberServo.setPosition(1);
-        }
-        else {
-            grabberServo.setPosition(-1);
-        }
-    }
+//    public void updateServos(MotorController motorController) {
+//        if (motorController.grabberRelease) {
+//            grabberServo.setPosition(1);
+//        }
+//        else {
+//            grabberServo.setPosition(-1);
+//        }
+//    }
 }

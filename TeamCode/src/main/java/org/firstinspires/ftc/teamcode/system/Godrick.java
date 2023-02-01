@@ -82,7 +82,7 @@ public class Godrick {
             Log.e("Godrick", e.toString());
             return;
         }
-        Log.d("Godrick", "initialize Completed");
+        Log.e("Godrick", "Initialize Completed");
     }
 
     public void update(){

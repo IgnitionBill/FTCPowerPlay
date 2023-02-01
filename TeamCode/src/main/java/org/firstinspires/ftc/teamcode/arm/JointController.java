@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class JointController {
     public String deviceName;
     public DcMotorEx dcMotor;
-    private boolean atTarget;
+ //   private boolean atTarget;
 
     public JointController(HardwareMap hardwareMap, String deviceName) {
 
@@ -26,12 +26,16 @@ public class JointController {
         //dcMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
+    public String toString(){
+        return deviceName + " " + dcMotor.toString();
+    }
+
     public void reset() {dcMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);}
     public void setTarget(int ticks) {dcMotor.setTargetPosition(ticks);}
     public void  setMode() {dcMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);}
     public void setPower(double power) {dcMotor.setPower(power);}
     public void setVelocity(double ticksPS) {dcMotor.setVelocity(ticksPS);} // in ticks per second
-    public boolean isAtTarget() {return atTarget;}
+//    public boolean isAtTarget() {return atTarget;}
     public double getVelocity() { // Returns in ticks
         return dcMotor.getVelocity();
     } // in ticks per second

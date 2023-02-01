@@ -62,4 +62,8 @@ public class DCArmJoint {
         return UtilityKit.armDegreesToTicks(targetAngularVelocity);
     }
 
+    public String toString(){
+        return "angle: " +  angle + " target: " + targetAngle;
+    }
+
 }

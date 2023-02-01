@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.system;
 
+import android.util.Log;
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.TouchSensor;
@@ -127,6 +129,7 @@ public class Sensors {
             lastTime = time;
 
             // get the joint angles and angular velocities by reading the motor controller ticks
+            StringBuilder sb = new StringBuilder();
             godrick.arm.turntable.setAngleByTicks(actuators.turnTable.getCurrentPosition());
             godrick.arm.turntable.setAngularVelocityByTicksPerSecond(actuators.turnTable.getVelocity());
             godrick.arm.baseJointA.setAngleByTicks(actuators.baseSegment.getCurrentPosition());
@@ -135,6 +138,14 @@ public class Sensors {
             godrick.arm.baseJointB.setAngularVelocityByTicksPerSecond(actuators.baseSegment2.getVelocity());
             godrick.arm.elbowJoint.setAngleByTicks(actuators.lowerSegment.getCurrentPosition());
             godrick.arm.elbowJoint.setAngularVelocityByTicksPerSecond(actuators.lowerSegment.getVelocity());
+            sb.append("th0 ");
+            sb.append(godrick.arm.turntable.toString());
+            sb.append("\tth1 ");
+            sb.append(godrick.arm.baseJointA.toString());
+            sb.append("\tth2 ");
+            sb.append(godrick.arm.elbowJoint.toString());
+
+            Log.e("Sensors: update", sb.toString());
 
             // Set old positions for drivetrain dc motors
             oldFrontLeftPosition = frontLeftPosition;
