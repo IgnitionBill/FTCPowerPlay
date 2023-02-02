@@ -23,7 +23,7 @@ public class JointController {
             Log.e("JointController", e.toString());
         }
 
-        //dcMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        dcMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     public String toString(){

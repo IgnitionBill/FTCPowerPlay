@@ -1,8 +1,7 @@
 package org.firstinspires.ftc.teamcode.system;
 
-import android.util.Log;
-
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -15,13 +14,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.teamcode.arm.Arm;
-import org.firstinspires.ftc.teamcode.arm.ArmPose;
 import org.firstinspires.ftc.teamcode.CameraWrapper;
-import org.firstinspires.ftc.teamcode.arm.ArmReference;
-import org.firstinspires.ftc.teamcode.arm.DCArmJoint;
-import org.firstinspires.ftc.teamcode.util.UnitOfAngle;
-import org.firstinspires.ftc.teamcode.util.UnitOfDistance;
 import org.firstinspires.ftc.teamcode.util.Vector2D;
 import org.firstinspires.ftc.teamcode.util.Vector3D;
 
@@ -57,10 +50,12 @@ public class Sensors {
     private TouchSensor touchLowerA;
     private TouchSensor touchLowerB;
     private TouchSensor touchBase;
+    private DigitalChannel digitalChannel;
 
-    public boolean lowerA;
-    public boolean lowerB;
-    public boolean base;
+    public boolean lowerLimitA;
+    public boolean lowerLimitB;
+    public boolean baseLimit;
+    public boolean tableLimit;
 
     // Create delta position of drivetrain dc motors
     public int deltaFrontLeftPosition;
@@ -111,6 +106,7 @@ public class Sensors {
             touchLowerA = hardwareMap.get(TouchSensor.class, "lowerTouchA");
             touchLowerB = hardwareMap.get(TouchSensor.class, "lowerTouchB");
             touchBase = hardwareMap.get(TouchSensor.class, "baseLimit");
+            digitalChannel = hardwareMap.get(DigitalChannel.class, "tableLimit");
 
             runtime.reset();
 
@@ -132,20 +128,18 @@ public class Sensors {
             StringBuilder sb = new StringBuilder();
             godrick.arm.turntable.setAngleByTicks(actuators.turnTable.getCurrentPosition());
             godrick.arm.turntable.setAngularVelocityByTicksPerSecond(actuators.turnTable.getVelocity());
-            godrick.arm.baseJointA.setAngleByTicks(actuators.baseSegment.getCurrentPosition());
-            godrick.arm.baseJointA.setAngularVelocityByTicksPerSecond(actuators.baseSegment.getVelocity());
-            godrick.arm.baseJointB.setAngleByTicks(actuators.baseSegment2.getCurrentPosition());
-            godrick.arm.baseJointB.setAngularVelocityByTicksPerSecond(actuators.baseSegment2.getVelocity());
+            godrick.arm.baseJoint.setAngleByTicks(actuators.baseSegment.getCurrentPosition());
+            godrick.arm.baseJoint.setAngularVelocityByTicksPerSecond(actuators.baseSegment.getVelocity());
             godrick.arm.elbowJoint.setAngleByTicks(actuators.lowerSegment.getCurrentPosition());
             godrick.arm.elbowJoint.setAngularVelocityByTicksPerSecond(actuators.lowerSegment.getVelocity());
             sb.append("th0 ");
             sb.append(godrick.arm.turntable.toString());
             sb.append("\tth1 ");
-            sb.append(godrick.arm.baseJointA.toString());
+            sb.append(godrick.arm.baseJoint.toString());
             sb.append("\tth2 ");
             sb.append(godrick.arm.elbowJoint.toString());
 
-            Log.e("Sensors: update", sb.toString());
+            //Log.e("Sensors: update", sb.toString());
 
             // Set old positions for drivetrain dc motors
             oldFrontLeftPosition = frontLeftPosition;
@@ -176,9 +170,10 @@ public class Sensors {
             position = gyro.getPosition();//.toUnit(DistanceUnit.INCH);
             position2D.set(position.x, position.y);
 
-            lowerA = touchLowerA.isPressed();
-            lowerB = touchLowerB.isPressed();
-            base = touchBase.isPressed();
+            lowerLimitA = touchLowerA.isPressed();
+            lowerLimitB = touchLowerB.isPressed();
+            baseLimit = touchBase.isPressed();
+            tableLimit = digitalChannel.getState();
 
 //            oldGrabberPosition = grabberPosition;
 //            double grabberX = baseJointA.getX(UnitOfDistance.CM)+ elbowJoint.getX(UnitOfDistance.CM);
@@ -189,14 +184,21 @@ public class Sensors {
             if(verbose) {
                 telemetry.addData("Position: ", position.toString());
                 telemetry.addData("Orientation: ", angles.toString());
-                telemetry.addData("Turn2: ", 0);
-                telemetry.addData("Base2: ", 0);
-                telemetry.addData("Lower2: ", 0);
+                telemetry.addData("Turn: ", godrick.arm.turntable.getAngleDeg());
+                telemetry.addData("BaseA: ", godrick.arm.baseJoint.getAngleDeg());
+                telemetry.addData("Lower: ", godrick.arm.elbowJoint.getAngleDeg());
+
+                telemetry.addData("Turn Target: ", godrick.arm.turntable.getTargetAngle());
+                telemetry.addData("BaseA Target: ", godrick.arm.baseJoint.getTargetAngle());
+                telemetry.addData("Lower Target: ", godrick.arm.elbowJoint.getTargetAngle());
 
                 // buttons
-                telemetry.addData("lower limit A: ", lowerA);
-                telemetry.addData("lower Limit B: ", lowerB);
-                telemetry.addData("base limit: ", base);
+                telemetry.addData("lower limit A: ", lowerLimitA);
+                telemetry.addData("lower Limit B: ", lowerLimitB);
+                telemetry.addData("base limit: ", baseLimit);
+                telemetry.addData("table limit: ", tableLimit);
+
+                telemetry.addData("Tolerance: ", godrick.actuators.lowerSegment.getTargetPositionTolerance());
             }
         }
 

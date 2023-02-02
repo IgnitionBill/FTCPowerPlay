@@ -76,6 +76,8 @@ public class Matrix3x3 {
     }
 
     public Vector3D multiply(Vector3D v){
+        // TODO: Print m to verify the matrix
+        // TODO: Print v to verify the vector
         return new Vector3D(
                 m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z,
                 m[1][0] * v.x + m[1][1] * v.y + m[1][2] * v.z,

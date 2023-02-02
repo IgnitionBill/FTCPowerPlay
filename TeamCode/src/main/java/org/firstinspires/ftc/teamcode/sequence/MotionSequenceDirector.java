@@ -2,15 +2,10 @@ package org.firstinspires.ftc.teamcode.sequence;
 
 import android.util.Log;
 
-import com.qualcomm.robotcore.robot.Robot;
-
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.arm.ArmController;
 import org.firstinspires.ftc.teamcode.arm.ArmPose;
 import org.firstinspires.ftc.teamcode.system.Godrick;
 import org.firstinspires.ftc.teamcode.system.Sensors;
-import org.firstinspires.ftc.teamcode.util.CylindricalVector3D;
-import org.firstinspires.ftc.teamcode.util.UtilityKit;
 import org.firstinspires.ftc.teamcode.util.Vector3D;
 
 /**
@@ -60,13 +55,15 @@ public class MotionSequenceDirector {
         sb.append(" Th0: " + currentSequence.currentTarget().th0);
         sb.append(" Th1: " + currentSequence.currentTarget().th1);
         sb.append(" Th2: " + currentSequence.currentTarget().th2);
-        sb.append(" Th3: " + currentSequence.currentTarget().th3);
-        Log.e("MotionSequenceDirector", "NE: Moving arm " + sb.toString());
+        sb.append(" R: " + currentSequence.currentTarget().th3);
+        sb.append(" Y: " + currentSequence.currentTarget().th4);
+        sb.append(" P: " + currentSequence.currentTarget().th5);
+        sb.append(" G: " + currentSequence.currentTarget().th6);
+        Log.e("MotionSequenceDirector: update", "setting target: " + sb.toString());
 
         // Update the arm angles
         godrick.arm.turntable.setTargetAngle(currentSequence.currentTarget().th0);
-        godrick.arm.baseJointA.setTargetAngle(currentSequence.currentTarget().th1);
-        godrick.arm.baseJointB.setTargetAngle(currentSequence.currentTarget().th1);
+        godrick.arm.baseJoint.setTargetAngle(currentSequence.currentTarget().th1);
         godrick.arm.elbowJoint.setTargetAngle(currentSequence.currentTarget().th2);
         godrick.arm.grabberRoll = currentSequence.currentTarget().th3;
         godrick.arm.grabberYaw = currentSequence.currentTarget().th4;

@@ -15,21 +15,23 @@ public class DCArmJoint {
         this.minRange = minRange;
         this.maxRange = maxRange;
         this.homeAngle = homeAngle;
+        targetAngle = homeAngle;
     }
 
     // returns the current angle in degrees
-    public double getAngle(){
+    public double getAngleDeg(){
         return angle;
     }
 
     // get the angular velocity in degrees per second
-    public double getAngularVelocity(){
+    public double getAngularVelocityDegPS(){
         return angularVelocity;
     }
 
     // sets the angle using the number of ticks read from the motor encoder
     public void setAngleByTicks(int ticks){
         angle = UtilityKit.armTicksToDegrees(ticks) + homeAngle; // zero ticks corresponds to the home angle after autoHome
+        angle = UtilityKit.limitToRange(angle, minRange, maxRange);
     }
 
     // convert ticks per second to degrees per second
@@ -44,7 +46,7 @@ public class DCArmJoint {
 
     // used for autohome, this does not limit the range of angle allowed because the angle is not set yet
     public void incrementTargetAngle(double increment){
-        this.targetAngle = targetAngle + increment;
+        this.targetAngle += increment;
     }
 
     // set the target angular velocity in degrees per second
@@ -55,6 +57,10 @@ public class DCArmJoint {
     // gets the target angle in ticks
     public int getTargetTicks(){
         return UtilityKit.armDegreesToTicks(targetAngle - homeAngle); // when target angle equals the home angle, we are at zero ticks after autoHome
+    }
+
+    public double getTargetAngle() {
+        return targetAngle;
     }
 
     // gets the target angular velocity in ticks per second

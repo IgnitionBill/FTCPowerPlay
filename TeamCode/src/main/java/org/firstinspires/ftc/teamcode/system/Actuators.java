@@ -4,14 +4,12 @@ import android.util.Log;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.drivetrain.MechanumController;
-import org.firstinspires.ftc.teamcode.drivetrain.MotorController;
-import org.firstinspires.ftc.teamcode.arm.ArmController;
-import org.firstinspires.ftc.teamcode.arm.JointController;
 import org.firstinspires.ftc.teamcode.util.UtilityKit;
 
 public class Actuators {
@@ -25,10 +23,10 @@ public class Actuators {
     public DcMotorEx backLeft;
 
     // Declare joint controllers for arm
-    public JointController turnTable;
-    public JointController baseSegment;
-    public JointController baseSegment2;
-    public JointController lowerSegment;
+    public DcMotorEx turnTable;
+    public DcMotorEx baseSegment;
+    public DcMotorEx baseSegment2;
+    public DcMotorEx lowerSegment;
 
     // Declare servo control for arm
     public Servo grabberServo; // th6
@@ -68,21 +66,36 @@ public class Actuators {
 
         try {
             // Initialize arm dc motors
-            turnTable = new JointController(hardwareMap, "turnTable");
-            lowerSegment = new JointController(hardwareMap, "lowerSegment");
-            lowerSegment.reverse();
-            baseSegment = new JointController(hardwareMap, "baseSegment");
-            baseSegment2 = new JointController(hardwareMap, "baseSegment2");
+            turnTable = hardwareMap.get(DcMotorEx.class, "turnTable");
+            baseSegment = hardwareMap.get(DcMotorEx.class, "baseSegment");
+            baseSegment2 = hardwareMap.get(DcMotorEx.class, "baseSegment2");
+            lowerSegment = hardwareMap.get(DcMotorEx.class, "lowerSegment");
+            lowerSegment.setDirection(DcMotorSimple.Direction.REVERSE);
 
-            turnTable.setPower(1.0);
-            baseSegment.setPower(1.0);
-            baseSegment2.setPower(1.0);
-            lowerSegment.setPower(1.0);
+            turnTable.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            baseSegment.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            baseSegment2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            lowerSegment.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+            // set the target position of the arm to the target position
+            turnTable.setTargetPosition(UtilityKit.armDegreesToTicks(godrick.arm.HOME_TH0));
+            baseSegment.setTargetPosition(UtilityKit.armDegreesToTicks(godrick.arm.MIN_TH1));
+            baseSegment2.setTargetPosition(UtilityKit.armDegreesToTicks(godrick.arm.MIN_TH1));
+            lowerSegment.setTargetPosition(UtilityKit.armDegreesToTicks(godrick.arm.MAX_TH2));
+
+            turnTable.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            baseSegment.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            baseSegment2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            lowerSegment.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            turnTable.setTargetPositionTolerance(2);
+            baseSegment.setTargetPositionTolerance(2);
+            baseSegment2.setTargetPositionTolerance(2);
+            lowerSegment.setTargetPositionTolerance(2);
         }
         catch (Exception e) {
-            System.out.println("Arm dc motors failed to initialize");
-            Log.e("Actuators", "Arm dc motors failed to initialize");
-            Log.e("Actuators", e.toString());
+            Log.e("Actuators: initialize", "Arm dc motors failed to initialize");
+            Log.e("Actuators: initialize", e.toString());
         }
 
         try {
@@ -122,24 +135,43 @@ public class Actuators {
         frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER); // this is for running to a target velocity
     }
 
-    public void updateArm(ArmController armController, Sensors sensors) {
+    public void updateArm() {
         StringBuilder sb = new StringBuilder();
 
-        turnTable.setTarget(godrick.arm.turntable.getTargetTicks());
-        baseSegment.setTarget(godrick.arm.baseJointA.getTargetTicks());
-        baseSegment2.setTarget(godrick.arm.baseJointB.getTargetTicks());
-        lowerSegment.setTarget(godrick.arm.elbowJoint.getTargetTicks());
-        sb.append(turnTable.deviceName + " current: ");
-        sb.append(turnTable.getCurrentPosition());
+        turnTable.setTargetPosition(godrick.arm.turntable.getTargetTicks());
+        baseSegment.setTargetPosition(godrick.arm.baseJoint.getTargetTicks());
+        baseSegment2.setTargetPosition(godrick.arm.baseJoint.getTargetTicks());
+        lowerSegment.setTargetPosition(godrick.arm.elbowJoint.getTargetTicks());
+
+        turnTable.setPower(1.0);
+        baseSegment.setPower(1.0);
+        baseSegment2.setPower(1.0);
+        lowerSegment.setPower(1.0);
+
+        turnTable.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        baseSegment.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        baseSegment2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        lowerSegment.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+//        sb.append(" th0 current: " + turnTable.getCurrentPosition());
+//        sb.append(" target: " + turnTable.dcMotor.getTargetPosition() + " ");
+//        sb.append(" th1a current: " + baseSegment.getCurrentPosition());
+//        sb.append(" target: " + baseSegment.dcMotor.getTargetPosition() + " ");
+//        sb.append(" th1b current: " + baseSegment2.getCurrentPosition());
+//        sb.append(" target: " + baseSegment2.dcMotor.getTargetPosition() + " ");
+//        sb.append(" th2 current: " + lowerSegment.getCurrentPosition());
+//        sb.append(" target: " + lowerSegment.dcMotor.getTargetPosition() + " ");
 
         // GoBilda 2000-0025-0002 300 degree max rotation
         rollServo.setPosition((1/150.0) * godrick.arm.grabberRoll+.5);
         pitchServo.setPosition((1/150.0) * godrick.arm.grabberPitch+.5);
         yawServo.setPosition((1/150.0)* godrick.arm.grabberYaw+.5);
         grabberServo.setPosition((1/150.0) * godrick.arm.grabberGrip+.5);
+
+        //Log.e("Actuators: updateArm", sb.toString());
 
         // TODO: what do we set the joint velocity to and why?
 //        turnTable.setVelocity(UtilityKit.ticksPerDegreeAtJoint*30); // why do we set the velocity?

@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.system.Godrick;
 
-@TeleOp(name="GodrickTheOpMode", group = "FullOpMode")
+@TeleOp(name="GodrickTheOpMode-4", group = "FullOpMode")
 public class GodrickTheOpMode extends LinearOpMode {
 
     // Create general variables

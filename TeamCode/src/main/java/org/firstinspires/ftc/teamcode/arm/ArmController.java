@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.arm;
 
 import android.util.Log;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.sequence.MotionSequenceDirector;
 import org.firstinspires.ftc.teamcode.sequence.MotionSequenceName;
@@ -9,10 +11,6 @@ import org.firstinspires.ftc.teamcode.system.Actuators;
 import org.firstinspires.ftc.teamcode.system.GamePadState;
 import org.firstinspires.ftc.teamcode.system.Godrick;
 import org.firstinspires.ftc.teamcode.system.Sensors;
-import org.firstinspires.ftc.teamcode.util.UnitOfAngle;
-import org.firstinspires.ftc.teamcode.util.UnitOfDistance;
-import org.firstinspires.ftc.teamcode.util.UtilityKit;
-import org.firstinspires.ftc.teamcode.util.Vector2D;
 
 /**
  * ArmController is the top level of controller for the arm.
@@ -63,6 +61,8 @@ public class ArmController {
 
         // store the initial position of the arm
         currentSequenceDone = true;
+
+        armControlMode = ArmControlMode.AUTO_HOME;
     }
 
     /**
@@ -78,7 +78,13 @@ public class ArmController {
             godrickAttackMode(gamePadState, sensors);
         }
         else if(armControlMode == ArmControlMode.MANUAL){
- //           godrickTheManual();
+            godrickTheManual();
+        }
+        else if(armControlMode == ArmControlMode.EASY){
+            godrickTakesItEasy();
+        }
+        else if(armControlMode == ArmControlMode.DEMO){
+            godrickDemo();
         }
 
         // check arm limits
@@ -91,6 +97,60 @@ public class ArmController {
 //            telemetry.addData("rotate target: ", grabberRoll);
 //            telemetry.addData("pitch target: ", grabberPitch);
 //        }
+    }
+
+    private void godrickTheManual(){
+        if(gamePadState.dPadLeft){
+            // move the turn table counter-clockwise
+            godrick.arm.turntable.incrementTargetAngle(1.0);
+        }
+        if(gamePadState.dPadRight){
+            // move the turntable clockwise
+            godrick.arm.turntable.incrementTargetAngle(-1.0);
+        }
+        if(gamePadState.dPadUp){
+            // move the arm forward
+            godrick.arm.baseJoint.incrementTargetAngle(1.0);
+        }
+        if(gamePadState.dPadDown){
+            // move the arm back
+            godrick.arm.baseJoint.incrementTargetAngle(-1.0);
+        }
+        if(gamePadState.y){
+            // move seg 2 forward
+            godrick.arm.elbowJoint.incrementTargetAngle(-1.0);
+        }
+        if(gamePadState.a){
+            // move seg 2 back
+            godrick.arm.elbowJoint.incrementTargetAngle(1.0);
+        }
+    }
+
+    private void godrickTakesItEasy(){
+
+        if(gamePadState.dPadUp){
+            // move the arm gripper forward via inverse kinematics
+            // x += diff;
+
+        }
+        if(gamePadState.dPadDown){
+            // move the arm gripper backward via inverse kinematics
+            // x -= diff;
+        }
+        if(gamePadState.y){
+            // move the arm gripper upward via inverse kinematics
+            // y += diff;
+        }
+        if(gamePadState.a){
+            // move the arm gripper downward via inverse kinematics
+            // y -= diff;
+        }
+        if (gamePadState.dPadLeft) {
+            // Rotate counter clockwise
+        }
+        if (gamePadState.dPadRight) {
+            // Rotate clockwise
+        }
     }
 
     // Manual input for inverse kinematics
@@ -233,43 +293,44 @@ public class ArmController {
 //        grabberRoll += addWristRotation;
 //    }
 
-    // TODO: coach has checked this and approves it for use with the note below for improvement
+    // TODO: add autohome for turntable
     private void autoHome(Sensors sensors, Actuators actuators, boolean verbose) {
         Log.e("ArmController", "Running autoHome");
         // if the base button is pressed, note that the joint is home and reset the motor encoders
-        if (sensors.base) {
+        if (sensors.baseLimit) {
             baseHome = true;
-            actuators.baseSegment.reset();
-            actuators.baseSegment2.reset();
-            //baseTicks = 0; // TODO: WE DON'T NEED THESE VARIABLES ANYMORE
-            //base.resetPosition(ArmReference.STERN);// TODO:Fix this ARM JOINT THING
+            actuators.baseSegment.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            actuators.baseSegment2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            //godrick.arm.baseJointA.setTargetAngle(0);
         }
         // if the lower button is pressed, note that it is home and reset the motor encoders
-        if (sensors.lowerB) {
+        if (sensors.lowerLimitB) {
             lowerHome = true;
-            actuators.lowerSegment.reset();
-            //lowerTicks = 0; // TODO: WE DON'T NEED THESE VARIABLES ANYMORE
-            //lower.resetPosition(ArmReference.BOW);// TODO:Fix this ARM JOINT THING
+            actuators.lowerSegment.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            //godrick.arm.elbowJoint.setTargetAngle(0);
         }
-
+        // after both buttons have been pressed, autohome complete, next mode
         if (baseHome && lowerHome) {
-            armControlMode = ArmControlMode.ATTACK;
+            armControlMode = ArmControlMode.MANUAL;
+            Log.e("ArmController", "autoHome complete");
         }
-        else { // slowly move arm until it presses the button
+        // until both buttons have been pressed,
+        else { // slowly move each arm toward the button
             if (!baseHome) {
-                godrick.arm.baseJointA.incrementTargetAngle(-1.0); // reduce by one degree
-                godrick.arm.baseJointB.incrementTargetAngle(-1.0);
-                //baseTicks-=5;
+                godrick.arm.baseJoint.setTargetAngle(godrick.arm.baseJoint.getAngleDeg() - 1.0);
             }
-            else {
-                godrick.arm.elbowJoint.incrementTargetAngle(1.0); // increase by one degree
-                // lowerTicks+=5;
+            if(!lowerHome) {
+                godrick.arm.elbowJoint.setTargetAngle(godrick.arm.elbowJoint.getAngleDeg() + 1.0);
             }
         }
 
         if (verbose) {
             telemetry.addData("ArmControlMode ", armControlMode.toString());
         }
+    }
+
+    private void godrickDemo(){
+        motionSequenceDirector.update();
     }
 
     // TODO: FOR EXAMPLE, in autoMode when the attack button is pressed, we look for a cone and grab it
@@ -300,16 +361,19 @@ public class ArmController {
     }
 
     private void checkArmLimits(Sensors sensors){
-        if (sensors.base) {
-         //   baseTicks = sensors.baseJointA.getCurrentTicks()+10;// TODO:Fix this ARM JOINT THING
+        if (sensors.baseLimit) {
+            Log.e("ArmController: checkArmLimits", "Base Button Pressed!");
+            godrick.arm.baseJoint.setTargetAngle(godrick.arm.baseJoint.getAngleDeg() + 1.0);
         }
 
-        if (sensors.lowerA) {
-          //  lowerTicks = sensors.elbowJoint.getCurrentTicks()+10;// TODO:Fix this ARM JOINT THING
+        if (sensors.lowerLimitA) {
+            Log.e("ArmController: checkArmLimits", "LowerA Button Pressed!");
+            godrick.arm.elbowJoint.setTargetAngle(godrick.arm.elbowJoint.getAngleDeg() + 1.0);
         }
 
-        else if (sensors.lowerB) {
-          //  lowerTicks = sensors.elbowJoint.getCurrentTicks()-10;// TODO:Fix this ARM JOINT THING
+        else if (sensors.lowerLimitB) {
+            Log.e("ArmController: checkArmLimits", "LowerB Button Pressed!");
+            godrick.arm.elbowJoint.setTargetAngle(godrick.arm.elbowJoint.getAngleDeg() - 1.0);
         }
     }
 

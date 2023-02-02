@@ -12,6 +12,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.arm.Arm;
 import org.firstinspires.ftc.teamcode.arm.ArmController;
 import org.firstinspires.ftc.teamcode.arm.ArmPoseGenerator;
+import org.firstinspires.ftc.teamcode.arm.InverseKinematics;
 import org.firstinspires.ftc.teamcode.drivetrain.MechanumController;
 import org.firstinspires.ftc.teamcode.sequence.MotionSequenceDirector;
 
@@ -29,6 +30,7 @@ public class Godrick {
     public Sensors sensors;
     public ArmController armController;
     public ArmPoseGenerator definedArmPositions;
+    public InverseKinematics inverseKinematics;
 
     public Gamepad gamepad1;
     public HardwareMap hardwareMap;
@@ -48,6 +50,7 @@ public class Godrick {
             gamePadState = new GamePadState();
             armController = new ArmController();
             definedArmPositions = new ArmPoseGenerator();
+            inverseKinematics = new InverseKinematics();
         }
         catch (Exception e){
             Log.e("Godrick", e.toString());
@@ -71,15 +74,18 @@ public class Godrick {
             // Initialize the hardware variables. Note that the strings used here as parameters
             // to 'get' must correspond to the names assigned during the robot configuration
             // step (using the FTC Robot Controller app on the phone).
+            gamePadState.initialize(telemetry);
             actuators.initializeGodrick(this);
             sensors.initialize(this);
             mechanumController.initialize(telemetry);
+            Log.e("Godrick: initialize", "mechanumController initialized");
             armController.initialize(this);
-            gamePadState.initialize(telemetry);
+            Log.e("Godrick: initialize", "armController initialized");
             motionSequenceDirector.initialize(this);
+            Log.e("Godrick: initialize", "motionSequenceDirector initialized");
         }
         catch (Exception e){
-            Log.e("Godrick", e.toString());
+            Log.e("Godrick: initialize", "FAILED: " + e.toString());
             return;
         }
         Log.e("Godrick", "Initialize Completed");
@@ -101,7 +107,7 @@ public class Godrick {
 
         // update the actuators
         actuators.updateDrivetrainMotors(mechanumController);
-        actuators.updateArm(armController, sensors);
+        actuators.updateArm();
 
         // display all telemetry updates to the controller, use verbose=true to see reports in telemetry
         telemetry.update();
