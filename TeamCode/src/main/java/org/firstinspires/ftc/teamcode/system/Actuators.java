@@ -156,14 +156,15 @@ public class Actuators {
         baseSegment2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         lowerSegment.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-//        sb.append(" th0 current: " + turnTable.getCurrentPosition());
-//        sb.append(" target: " + turnTable.dcMotor.getTargetPosition() + " ");
-//        sb.append(" th1a current: " + baseSegment.getCurrentPosition());
-//        sb.append(" target: " + baseSegment.dcMotor.getTargetPosition() + " ");
-//        sb.append(" th1b current: " + baseSegment2.getCurrentPosition());
-//        sb.append(" target: " + baseSegment2.dcMotor.getTargetPosition() + " ");
-//        sb.append(" th2 current: " + lowerSegment.getCurrentPosition());
-//        sb.append(" target: " + lowerSegment.dcMotor.getTargetPosition() + " ");
+        sb.append(" th0 current: " + turnTable.getCurrentPosition());
+        sb.append(" target: " + turnTable.getTargetPosition() + " ");
+        sb.append(" th1a current: " + baseSegment.getCurrentPosition());
+        sb.append(" target: " + baseSegment.getTargetPosition() + " ");
+        sb.append(" th1b current: " + baseSegment2.getCurrentPosition());
+        sb.append(" target: " + baseSegment2.getTargetPosition() + " ");
+        sb.append(" th2 current: " + lowerSegment.getCurrentPosition());
+        sb.append(" target: " + lowerSegment.getTargetPosition() + " ");
+        Log.i("Actuators: updateArm", sb.toString());
 
         // GoBilda 2000-0025-0002 300 degree max rotation
         rollServo.setPosition((1/150.0) * godrick.arm.grabberRoll+.5);

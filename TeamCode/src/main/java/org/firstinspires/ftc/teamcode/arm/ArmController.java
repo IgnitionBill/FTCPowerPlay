@@ -295,7 +295,7 @@ public class ArmController {
 
     // TODO: add autohome for turntable
     private void autoHome(Sensors sensors, Actuators actuators, boolean verbose) {
-        Log.e("ArmController", "Running autoHome");
+        Log.i("ArmController", "Running autoHome");
         // if the base button is pressed, note that the joint is home and reset the motor encoders
         if (sensors.baseLimit) {
             baseHome = true;

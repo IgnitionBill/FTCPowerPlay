@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.arm;
 
+import android.util.Log;
+
 import org.firstinspires.ftc.teamcode.util.UtilityKit;
 
 public class DCArmJoint {
@@ -41,6 +43,7 @@ public class DCArmJoint {
 
     // sets the target angle in degrees
     public void setTargetAngle(double targetAngle){
+        Log.e("DCArmJoint: setTargetAngle", "to: " + targetAngle);
         this.targetAngle = UtilityKit.limitToRange(targetAngle, minRange, maxRange);
     }
 
