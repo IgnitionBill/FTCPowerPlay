@@ -77,16 +77,16 @@ public class Actuators {
             baseSegment2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             lowerSegment.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-            // set the target position of the arm to the target position
-            turnTable.setTargetPosition(UtilityKit.armDegreesToTicks(godrick.arm.HOME_TH0));
-            baseSegment.setTargetPosition(UtilityKit.armDegreesToTicks(godrick.arm.MIN_TH1));
-            baseSegment2.setTargetPosition(UtilityKit.armDegreesToTicks(godrick.arm.MIN_TH1));
-            lowerSegment.setTargetPosition(UtilityKit.armDegreesToTicks(godrick.arm.MAX_TH2));
-
-            turnTable.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            baseSegment.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            baseSegment2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            lowerSegment.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            // set the target position of the arm to the target position TODO: COMMENTED THIS BECAUSE WE DON'T WANT TO MOVE YET
+//            turnTable.setTargetPosition(UtilityKit.armDegreesToTicks(godrick.arm.HOME_TH0));
+//            baseSegment.setTargetPosition(UtilityKit.armDegreesToTicks(godrick.arm.MIN_TH1));
+//            baseSegment2.setTargetPosition(UtilityKit.armDegreesToTicks(godrick.arm.MIN_TH1));
+//            lowerSegment.setTargetPosition(UtilityKit.armDegreesToTicks(godrick.arm.MAX_TH2));
+//
+//            turnTable.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//            baseSegment.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//            baseSegment2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//            lowerSegment.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             turnTable.setTargetPositionTolerance(2);
             baseSegment.setTargetPositionTolerance(2);
@@ -140,6 +140,7 @@ public class Actuators {
 
     public void updateArm() {
         StringBuilder sb = new StringBuilder();
+        StringBuilder sb2 = new StringBuilder();
 
         turnTable.setTargetPosition(godrick.arm.turntable.getTargetTicks());
         baseSegment.setTargetPosition(godrick.arm.baseJoint.getTargetTicks());
@@ -156,6 +157,13 @@ public class Actuators {
         baseSegment2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         lowerSegment.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
+        sb2.append("deg: ");
+        sb2.append(" th0 " + godrick.arm.turntable.toString());
+        sb2.append(" th1 " + godrick.arm.baseJoint.toString());
+        sb2.append(" th2 " + godrick.arm.elbowJoint.toString());
+        Log.i("Actuators: updateArm", sb2.toString());
+
+        sb.append("ticks: ");
         sb.append(" th0 current: " + turnTable.getCurrentPosition());
         sb.append(" target: " + turnTable.getTargetPosition() + " ");
         sb.append(" th1a current: " + baseSegment.getCurrentPosition());

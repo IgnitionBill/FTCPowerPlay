@@ -5,7 +5,7 @@ import android.util.Log;
 import org.firstinspires.ftc.teamcode.util.UtilityKit;
 
 public class DCArmJoint {
-    private double angle; // joint angle in degrees
+    private double angle; // joint angle in degrees, read from motor encoder in ticks and converted to degrees
     private double maxRange; // the max angle of this joint in degrees, assumes it is properly zeroed
     private double minRange; // the min angle of this joint in degrees, assumes it is properly zeroed
     private double angularVelocity; // the angular velocity of the joint in degrees per second, as read from the motor encoders
@@ -18,6 +18,18 @@ public class DCArmJoint {
         this.maxRange = maxRange;
         this.homeAngle = homeAngle;
         targetAngle = homeAngle;
+    }
+
+    public void setTargetToHome(){
+        targetAngle = homeAngle;
+    }
+
+    public void setTargetToMin(){
+        targetAngle = minRange;
+    }
+
+    public void setTargetToMax(){
+        targetAngle = maxRange;
     }
 
     // returns the current angle in degrees
@@ -33,7 +45,6 @@ public class DCArmJoint {
     // sets the angle using the number of ticks read from the motor encoder
     public void setAngleByTicks(int ticks){
         angle = UtilityKit.armTicksToDegrees(ticks) + homeAngle; // zero ticks corresponds to the home angle after autoHome
-        angle = UtilityKit.limitToRange(angle, minRange, maxRange);
     }
 
     // convert ticks per second to degrees per second
@@ -43,7 +54,6 @@ public class DCArmJoint {
 
     // sets the target angle in degrees
     public void setTargetAngle(double targetAngle){
-        Log.e("DCArmJoint: setTargetAngle", "to: " + targetAngle);
         this.targetAngle = UtilityKit.limitToRange(targetAngle, minRange, maxRange);
     }
 

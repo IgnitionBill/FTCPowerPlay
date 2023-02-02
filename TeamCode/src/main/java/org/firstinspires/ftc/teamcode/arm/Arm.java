@@ -25,18 +25,10 @@ public class Arm {
     public final static double LGRIPZ = 8.0; // forward length from joint 5 to the center of the gripper
     public final static double LGRIPX = -9.0; // leftward distance from joint 5 to the center of the gripper
 
-    public final static double HOME_TH0 = 45;
-    public final static double MIN_TH0 = -180;
-    public final static double MAX_TH0 = 180;
-    public final static double MIN_TH1 = -Math.toDegrees(Math.atan2(33.0, 39.0)); // about -74.7 degrees
-    public final static double MAX_TH1 = 90;
-    public final static double MIN_TH2 = 0;
-    public final static double MAX_TH2 = 175;
-
     // ARM JOINTS RUN BY DC MOTORS
-    public DCArmJoint turntable = new DCArmJoint(MIN_TH0, MAX_TH0, HOME_TH0);
-    public DCArmJoint baseJoint = new DCArmJoint(MIN_TH1, MAX_TH1, MIN_TH1);
-    public DCArmJoint elbowJoint = new DCArmJoint(MIN_TH2, MAX_TH2, MAX_TH2);
+    public DCArmJoint turntable = new DCArmJoint(-180, 180, 45);
+    public DCArmJoint baseJoint = new DCArmJoint(-74, 90, -74);
+    public DCArmJoint elbowJoint = new DCArmJoint(0, 175, 175);
 
     public double grabberRoll = 0; // roll
     public double grabberPitch = 0; // pitch
