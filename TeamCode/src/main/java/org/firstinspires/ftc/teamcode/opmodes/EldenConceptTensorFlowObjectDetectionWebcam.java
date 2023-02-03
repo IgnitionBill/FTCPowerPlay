@@ -31,6 +31,7 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import android.content.Context;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -55,7 +56,7 @@ import java.util.List;
  * is explained below.
  */
 @TeleOp(name = "Concept: Elden TensorFlow Object Detection Webcam", group = "Concept")
-//@Disabled
+@Disabled
 public class EldenConceptTensorFlowObjectDetectionWebcam extends LinearOpMode {
 
     /*

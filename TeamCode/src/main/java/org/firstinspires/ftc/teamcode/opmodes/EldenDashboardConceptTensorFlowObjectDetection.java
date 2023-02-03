@@ -32,6 +32,7 @@ package org.firstinspires.ftc.teamcode.opmodes;
 import android.util.Log;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -55,7 +56,7 @@ import java.util.List;
  * is explained below.
  */
 @TeleOp(name = "Concept: Elden Dashboard TensorFlow Object Detection", group = "Concept")
-//@Disabled
+@Disabled
 public class EldenDashboardConceptTensorFlowObjectDetection extends LinearOpMode {
 
     /*

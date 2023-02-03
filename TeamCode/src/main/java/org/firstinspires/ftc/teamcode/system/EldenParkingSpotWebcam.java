@@ -107,20 +107,20 @@ public class EldenParkingSpotWebcam implements ParkingSpot {
     private long previousCheck;
     private ParkingEnum designatedParkingSpot;
 
-    public EldenParkingSpotWebcam(Telemetry telemetry, HardwareMap hardwareMap) {
-        initWebcam(telemetry, hardwareMap);
+    public EldenParkingSpotWebcam(Telemetry telemetry, HardwareMap hardwareMap, ElapsedTime runtime, String webcamName) {
+        this.runtime = runtime;
+        initWebcam(telemetry, hardwareMap, webcamName);
     }
 
-    private void initWebcam(Telemetry telemetry, HardwareMap hardwareMap) {
+    private void initWebcam(Telemetry telemetry, HardwareMap hardwareMap, String webcamName) {
 
         this.telemetry = telemetry;
         this.hardwareMap = hardwareMap;
 
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
         // first.
-        initVuforia();
+        initVuforia(webcamName);
         initTfod();
-        runtime.reset();
         previousCheck = 0;
 
         /**
@@ -143,14 +143,14 @@ public class EldenParkingSpotWebcam implements ParkingSpot {
     /**
      * Initialize the Vuforia localization engine.
      */
-    private void initVuforia() {
+    private void initVuforia(String webcamName) {
         /*
          * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
          */
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
+        parameters.cameraName = hardwareMap.get(WebcamName.class, webcamName);
 
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
@@ -203,7 +203,6 @@ public class EldenParkingSpotWebcam implements ParkingSpot {
 
     @Override
     public ParkingEnum getParkingSpot() {
-        //        TODO: Return the most common label detected
         if (tfod != null) {
             // getUpdatedRecognitions() will return null if no new information is available since
             // the last time that call was made.

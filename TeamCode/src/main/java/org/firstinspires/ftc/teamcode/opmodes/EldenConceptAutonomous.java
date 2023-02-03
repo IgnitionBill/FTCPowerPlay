@@ -29,8 +29,10 @@
 
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.system.EldenParkingSpotWebcam;
 import org.firstinspires.ftc.teamcode.util.ParkingEnum;
@@ -51,10 +53,11 @@ public class EldenConceptAutonomous extends LinearOpMode {
 
     EldenParkingSpotWebcam eldenParkingSpotWebcam;
     ParkingEnum myParkingSpot;
+    private ElapsedTime runtime = new ElapsedTime();
 
     @Override
     public void runOpMode() {
-        eldenParkingSpotWebcam = new EldenParkingSpotWebcam(telemetry, hardwareMap);
+        eldenParkingSpotWebcam = new EldenParkingSpotWebcam(telemetry, hardwareMap, runtime, "Webcam 1");
 
         /** Wait for the game to begin */
         telemetry.addData(">", "Press Play to start op mode");
