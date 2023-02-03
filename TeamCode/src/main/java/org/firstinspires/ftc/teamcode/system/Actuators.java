@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.arm.ArmPose;
 import org.firstinspires.ftc.teamcode.drivetrain.MechanumController;
 import org.firstinspires.ftc.teamcode.util.UtilityKit;
 
@@ -29,10 +30,10 @@ public class Actuators {
     public DcMotorEx lowerSegment;
 
     // Declare servo control for arm
-    public Servo grabberServo; // th6
     public Servo rollServo; // th3
     public Servo yawServo; // th4
     public Servo pitchServo; // th5
+    public Servo grabberServo; // th6
 
     Godrick godrick;
 
@@ -88,10 +89,10 @@ public class Actuators {
 //            baseSegment2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 //            lowerSegment.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            turnTable.setTargetPositionTolerance(2);
-            baseSegment.setTargetPositionTolerance(2);
-            baseSegment2.setTargetPositionTolerance(2);
-            lowerSegment.setTargetPositionTolerance(2);
+            turnTable.setTargetPositionTolerance(ArmPose.ANGULAR_THRESHOLD);
+            baseSegment.setTargetPositionTolerance(ArmPose.ANGULAR_THRESHOLD);
+            baseSegment2.setTargetPositionTolerance(ArmPose.ANGULAR_THRESHOLD);
+            lowerSegment.setTargetPositionTolerance(ArmPose.ANGULAR_THRESHOLD);
         }
         catch (Exception e) {
             Log.e("Actuators: initialize", "Arm dc motors failed to initialize");
@@ -147,10 +148,36 @@ public class Actuators {
         baseSegment2.setTargetPosition(godrick.arm.baseJoint.getTargetTicks());
         lowerSegment.setTargetPosition(godrick.arm.elbowJoint.getTargetTicks());
 
-        turnTable.setPower(1.0);
-        baseSegment.setPower(1.0);
-        baseSegment2.setPower(1.0);
-        lowerSegment.setPower(1.0);
+        if (turnTable.isBusy()) {
+            turnTable.setPower(1);
+        }
+        else {
+            turnTable.setPower(0);
+        }
+        if (baseSegment.isBusy()) {
+            baseSegment.setPower(1);
+        }
+        else {
+            baseSegment.setPower(0);
+        }
+        if (baseSegment2.isBusy()) {
+            baseSegment2.setPower(1);
+        }
+        else {
+            baseSegment2.setPower(0);
+        }
+        if (lowerSegment.isBusy()) {
+            lowerSegment.setPower(1);
+        }
+        else {
+            lowerSegment.setPower(0);
+        }
+
+        telemetry.addData("Turn power: ", turnTable.getPower());
+        telemetry.addData("Base1 power:", baseSegment.getPower());
+        telemetry.addData("Base2 power: ", baseSegment2.getPower());
+        telemetry.addData("Elbow power: ", lowerSegment.getPower());
+
 
         turnTable.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         baseSegment.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -172,7 +199,7 @@ public class Actuators {
         sb.append(" target: " + baseSegment2.getTargetPosition() + " ");
         sb.append(" th2 current: " + lowerSegment.getCurrentPosition());
         sb.append(" target: " + lowerSegment.getTargetPosition() + " ");
-        Log.i("Actuators: updateArm", sb.toString());
+        //Log.i("Actuators: updateArm", sb.toString());
 
         // GoBilda 2000-0025-0002 300 degree max rotation
         rollServo.setPosition((1/150.0) * godrick.arm.grabberRoll+.5);

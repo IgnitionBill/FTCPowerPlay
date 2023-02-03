@@ -34,7 +34,7 @@ public class GamePadState {
 
     public boolean altMode = false;
     private long lastPress = 0l;
-    private long timeLimit = 500l;
+    private final long timeLimit = 500L;
 
     private ElapsedTime runtime = new ElapsedTime();
     private Telemetry telemetry;

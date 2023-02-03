@@ -20,9 +20,14 @@ public class MotionSequence {
         return sequence.get(current);
     }
 
+    public int getIndex() {
+        return current;
+    }
+
     // switch to the next target if there is one, otherwise switch back to start and return false
     public boolean nextTarget(){
-        if(current++ < sequence.size()){
+        if(current+1 < sequence.size()){
+            current++;
             return true;
         }
         current = 0; // start over

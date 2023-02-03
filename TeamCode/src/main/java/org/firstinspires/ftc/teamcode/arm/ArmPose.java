@@ -18,7 +18,7 @@ public class ArmPose {
     public double om5;
     public double om6;
 
-    public final static double ANGULAR_THRESHOLD = 1; // one degree
+    public final static int ANGULAR_THRESHOLD = 5; // one degree
     /*
     All arm position angles are measured relative to the standard robot coordinates.
     Forward is positive.

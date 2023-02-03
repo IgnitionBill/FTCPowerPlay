@@ -37,12 +37,14 @@ public class MotionSequenceDirector {
 
         // if the current sequence is done, simply return
         if(currentSequence == null){
+            Log.e("MotionSequenceDirector: update", "Sequence Done");
             return;
         }
 
         // if we reached the target position
         ArmPose currentPose = godrick.arm.getCurrentPose();
         if(currentPose.closeTo(currentSequence.currentTarget())){
+            Log.e("MotionSequenceDirector: update", "Pose Complete");
             // change to the next target, unless there is no next target, then the sequence is done
             if(!currentSequence.nextTarget()){
                 currentSequence = null;
@@ -51,10 +53,12 @@ public class MotionSequenceDirector {
         }
 
         // update the motion of the arm by moving further toward currentTarget
+        ArmPose p = godrick.arm.getCurrentPose();
         StringBuilder sb = new StringBuilder();
-        sb.append(" Th0: " + currentSequence.currentTarget().th0);
-        sb.append(" Th1: " + currentSequence.currentTarget().th1);
-        sb.append(" Th2: " + currentSequence.currentTarget().th2);
+        sb.append(" Index: " + currentSequence.getIndex());
+        sb.append(" Th0: " + p.th0 + "=>" + currentSequence.currentTarget().th0);
+        sb.append(" Th1: " + p.th1 + "=>" + currentSequence.currentTarget().th1);
+        sb.append(" Th2: " + p.th2 + "=>"  + currentSequence.currentTarget().th2);
         sb.append(" R: " + currentSequence.currentTarget().th3);
         sb.append(" Y: " + currentSequence.currentTarget().th4);
         sb.append(" P: " + currentSequence.currentTarget().th5);
@@ -76,14 +80,23 @@ public class MotionSequenceDirector {
         // if the current sequence is done, try to perform the requested sequence
         if(currentSequence == null) {
             switch (sequenceName){
-                case CarryToGrabToCarry:
+                case GrabCone:
                     tryToGrab();
-                case CarryToPlaceToCarry:
+                    break;
+                case PlaceCone:
                     tryToPlace();
-                case HomeToCarry:
+                    break;
+                case ToCarry:
                     goCarry();
-                case CarryToHome:
+                    break;
+                case ToHome:
                     goHome();
+                    break;
+                case ToConeView:
+                    goConeView();
+                    break;
+                default:
+                    return;
             }
         }
     }
@@ -119,12 +132,13 @@ public class MotionSequenceDirector {
             return;
         }
 
-        Log.e("MotionSequenceDirector", toCone.toString());
-        Log.e("MotionSequenceDirector", theCone.toString());
+        Log.e("MotionSequenceDirector", "Vector toCone: " + toCone.toString());
+        Log.e("MotionSequenceDirector", "Vector theCone: " + theCone.toString());
 
         // create a motion sequence to grab the cone at the vector in robot coordinates
-        currentSequence = new CarryToGrabToCarry(theCone);
-
+ //       currentSequence = new ConeGrabSequence(theCone, godrick.arm.getCurrentPose());
+        // alternatively, the default grab
+        currentSequence = new ConeGrabSequence(godrick.arm.getCurrentPose());
     }
 
     private void tryToPlace(){
@@ -161,18 +175,23 @@ public class MotionSequenceDirector {
         Log.e("MotionSequenceDirector", theCone.toString());
 
         // create a motion sequence to grab the cone at the vector in robot coordinates
-        currentSequence = new CarryToPlaceToCarry(theCone);
+        currentSequence = new ConePlaceSequence(theCone);
 
     }
 
     private void goCarry(){
         //
         Log.e("MotionSequenceDirector", "HomeToCarry");
-        currentSequence = new HomeToCarry();
+        currentSequence = new CarrySequence(godrick.arm.getCurrentPose());
     }
 
     private void goHome(){
         Log.e("ArmController", "CarryToHome");
         currentSequence = new CarryToHome();
+    }
+
+    private void goConeView(){
+        Log.e("ArmController", "ToConeView");
+        currentSequence = new ConeReadSequence(godrick.arm.getCurrentPose());
     }
 }

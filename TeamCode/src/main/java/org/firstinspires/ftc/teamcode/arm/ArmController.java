@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.system.Actuators;
 import org.firstinspires.ftc.teamcode.system.GamePadState;
 import org.firstinspires.ftc.teamcode.system.Godrick;
 import org.firstinspires.ftc.teamcode.system.Sensors;
+import org.firstinspires.ftc.teamcode.util.CylindricalVector3D;
 
 /**
  * ArmController is the top level of controller for the arm.
@@ -29,6 +30,7 @@ public class ArmController {
     boolean currentSequenceDone = true;
     boolean baseHome = true;
     boolean lowerHome = true;
+    boolean turnTableHome = false;
 
     // Gear Ratio = 188:1
     // Encoder Shaft = 28 pulses per revolution
@@ -58,6 +60,7 @@ public class ArmController {
 
         baseHome = false;
         lowerHome = false;
+        turnTableHome = false;
 
         // store the initial position of the arm
         currentSequenceDone = true;
@@ -74,7 +77,15 @@ public class ArmController {
         if (armControlMode == ArmControlMode.AUTO_HOME) {
             autoHome(sensors, actuators, true);
         }
-        else if (armControlMode == ArmControlMode.ATTACK) {
+        else {
+            if (!godrick.gamePadState.altMode) {
+                armControlMode = ArmControlMode.ATTACK;
+            }
+            if (godrick.gamePadState.altMode) {
+                armControlMode = ArmControlMode.MANUAL;
+            }
+        }
+        if (armControlMode == ArmControlMode.ATTACK) {
             godrickAttackMode(gamePadState, sensors);
         }
         else if(armControlMode == ArmControlMode.MANUAL){
@@ -120,14 +131,21 @@ public class ArmController {
 
     private void godrickTakesItEasy(){
 
+        CylindricalVector3D currentPosition;
+
         if(gamePadState.dPadUp){
             // move the arm gripper forward via inverse kinematics
             // x += diff;
-
+//            if (currentPosition.rho < godrick.arm.maxArmHeight-5) {
+//                currentPosition.rho++;
+//            }
         }
         if(gamePadState.dPadDown){
             // move the arm gripper backward via inverse kinematics
             // x -= diff;
+//            if (currentPosition.rho > 10) {
+//                currentPosition.rho--;
+//            }
         }
         if(gamePadState.y){
             // move the arm gripper upward via inverse kinematics
@@ -143,26 +161,18 @@ public class ArmController {
         if (gamePadState.dPadRight) {
             // Rotate clockwise
         }
+
+//        if (Math.sqrt(currentPosition.rho) < godrick.arm.maxArmHeight) {
+//
+//        }
     }
 
     // TODO: add autohome for turntable
     private void autoHome(Sensors sensors, Actuators actuators, boolean verbose) {
         Log.i("ArmController", "Running autoHome");
-//        // if the base button is pressed, note that the joint is home and reset the motor encoders
-//        if (sensors.baseLimit) {
-//            baseHome = true;
-//            actuators.baseSegment.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//            actuators.baseSegment2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//            godrick.arm.baseJoint.setTargetToHome();
-//        }
-//        // if the lower button is pressed, note that it is home and reset the motor encoders
-//        if (sensors.lowerLimitB) {
-//            lowerHome = true;
-//            actuators.lowerSegment.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//            godrick.arm.elbowJoint.setTargetToHome();
-//        }
+
         // after both buttons have been pressed, autohome complete, next mode
-        if (baseHome && lowerHome) {
+        if (baseHome && lowerHome && turnTableHome) {
             armControlMode = ArmControlMode.ATTACK;
             Log.e("ArmController", "autoHome complete");
         }
@@ -175,6 +185,9 @@ public class ArmController {
             if(!lowerHome) {
                 godrick.arm.elbowJoint.incrementTargetAngle(2.0);
                 //godrick.arm.elbowJoint.setTargetAngle(godrick.arm.elbowJoint.getAngleDeg() + 1.0);
+            }
+            if(!turnTableHome){
+                godrick.arm.turntable.incrementTargetAngle(2.0);
             }
         }
 
@@ -194,19 +207,19 @@ public class ArmController {
 
         if(gamePadState.a){
             Log.e("ArmController", "Grab Pressed.");
-            motionSequenceDirector.requestNewSequence(MotionSequenceName.CarryToGrabToCarry);
+            motionSequenceDirector.requestNewSequence(MotionSequenceName.GrabCone);
         }
         else if(gamePadState.b){
             Log.e("ArmController", "Place Pressed.");
-            motionSequenceDirector.requestNewSequence(MotionSequenceName.CarryToPlaceToCarry);
+            motionSequenceDirector.requestNewSequence(MotionSequenceName.PlaceCone);
         }
         else if(gamePadState.x){
-            Log.e("ArmController", "Home Pressed.");
-            motionSequenceDirector.requestNewSequence(MotionSequenceName.CarryToHome);
+            Log.e("ArmController", "ConeView Pressed.");
+            motionSequenceDirector.requestNewSequence(MotionSequenceName.ToConeView);
         }
         else if(gamePadState.y){
             Log.e("ArmController", "Carry Pressed.");
-            motionSequenceDirector.requestNewSequence(MotionSequenceName.HomeToCarry);
+            motionSequenceDirector.requestNewSequence(MotionSequenceName.ToCarry);
         }
         else{
             //Log.i("ArmController", "Nothing detected in attack mode");
@@ -237,6 +250,17 @@ public class ArmController {
             actuators.lowerSegment.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             godrick.arm.elbowJoint.setTargetToHome();
             godrick.arm.elbowJoint.incrementTargetAngle(-8.0);
+        }
+
+        // todo: only stop to reset when the position is off by a lot
+        if(!sensors.tableLimit){
+            if(armControlMode == ArmControlMode.AUTO_HOME) {
+                //Log.e("ArmController: checkArmLimits", "Turn Table Limit Reached");
+                turnTableHome = true;
+                actuators.turnTable.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                godrick.arm.turntable.setTargetToHome();
+                godrick.arm.turntable.incrementTargetAngle(0);
+            }
         }
     }
 }

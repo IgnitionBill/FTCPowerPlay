@@ -5,7 +5,7 @@ import org.firstinspires.ftc.teamcode.sequence.MotionSequence;
 
 public class CarryToHome extends MotionSequence {
     public CarryToHome(){
-        sequence.add(ArmPoseGenerator.carry);
+        //sequence.add(ArmPoseGenerator.carry);
         sequence.add(ArmPoseGenerator.home);
     }
 }

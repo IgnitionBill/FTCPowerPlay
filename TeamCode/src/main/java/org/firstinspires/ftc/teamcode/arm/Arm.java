@@ -24,11 +24,14 @@ public class Arm {
     public final static double LCAM = 6.2; // length from joint 5 to camera face
     public final static double LGRIPZ = 8.0; // forward length from joint 5 to the center of the gripper
     public final static double LGRIPX = -9.0; // leftward distance from joint 5 to the center of the gripper
+    public final static double TABLE_HOME = 45;
+    public final static double BASE_HOME = -74;
+    public final static double ELBOW_HOME = 165;
 
     // ARM JOINTS RUN BY DC MOTORS
-    public DCArmJoint turntable = new DCArmJoint(-180, 180, 45);
-    public DCArmJoint baseJoint = new DCArmJoint(-74, 90, -74);
-    public DCArmJoint elbowJoint = new DCArmJoint(0, 175, 175);
+    public DCArmJoint turntable = new DCArmJoint(-180, 180, TABLE_HOME);
+    public DCArmJoint baseJoint = new DCArmJoint(-74, 90, BASE_HOME);
+    public DCArmJoint elbowJoint = new DCArmJoint(0, 165, ELBOW_HOME);
 
     public double grabberRoll = 0; // roll
     public double grabberPitch = 0; // pitch
@@ -46,6 +49,8 @@ public class Arm {
     Vector3D l4 = new Vector3D(0, 0, L4);
     Vector3D lCam = new Vector3D(0, 0, LCAM);
     Vector3D lGrip = new Vector3D(LGRIPX, 0, LGRIPZ);
+
+    public double maxArmHeight = l0.z+l1.z+l2.z;
 
     // unit vector defining an axis of rotation
     Vector3D u0 = new Vector3D(0, 0, 1); // up
