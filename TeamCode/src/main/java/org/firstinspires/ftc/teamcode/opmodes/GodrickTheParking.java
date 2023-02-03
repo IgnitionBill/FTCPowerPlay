@@ -13,8 +13,13 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.teamcode.drivetrain.DriveMove;
 import org.firstinspires.ftc.teamcode.drivetrain.MechanumController;
+<<<<<<< HEAD
 import org.firstinspires.ftc.teamcode.system.Godrick;
+=======
+import org.firstinspires.ftc.teamcode.system.EldenParkingSpotWebcam;
+>>>>>>> origin/EldenParking-v2
 import org.firstinspires.ftc.teamcode.system.Sensors;
+import org.firstinspires.ftc.teamcode.util.ParkingEnum;
 import org.firstinspires.ftc.teamcode.util.UnitOfAngle;
 import org.firstinspires.ftc.teamcode.util.UnitOfDistance;
 import org.firstinspires.ftc.teamcode.util.UtilityKit;
@@ -28,6 +33,7 @@ public class GodrickTheParking extends LinearOpMode {
 
     // Create general variables
     private ElapsedTime runtime = new ElapsedTime();
+<<<<<<< HEAD
     Godrick godrick = new Godrick();
 
     private static final String TFOD_MODEL_ASSET = "GOOSE2.tflite";
@@ -64,15 +70,16 @@ public class GodrickTheParking extends LinearOpMode {
             // (typically 16/9).
             tfod.setZoom(1.0, 16.0/9.0);
         }
+=======
+    EldenParkingSpotWebcam eldenParkingSpotWebcam;
+    ParkingEnum target;
+    public static final String webcam = "Webcam 1";
+
+    public void runOpMode() throws InterruptedException {
+        eldenParkingSpotWebcam = new EldenParkingSpotWebcam(telemetry, hardwareMap, runtime, webcam);
+>>>>>>> origin/EldenParking-v2
 
         MechanumController mechanumController = new MechanumController();
-
-        //DriveMove forward = mechanumController.moveInDirection(27.5, UnitOfDistance.IN, 0, UnitOfAngle.DEGREES, "forward");
-        //DriveMove secondForward = mechanumController.moveInDirection(12, UnitOfDistance.IN, 0, UnitOfAngle.DEGREES, "secondForward");
-        //DriveMove moveToCenter = mechanumController.moveInDirection(40, UnitOfDistance.IN, -90, UnitOfAngle.DEGREES, "moveToCenter");
-        //DriveMove left = mechanumController.moveInDirection(16, UnitOfDistance.IN, 90, UnitOfAngle.DEGREES, "left");
-        //DriveMove middle  = mechanumController.moveInDirection(40, UnitOfDistance.IN, 90, UnitOfAngle.DEGREES, "middle");
-        //DriveMove right = mechanumController.moveInDirection(68, UnitOfDistance.IN, 90, UnitOfAngle.DEGREES, "right");
 
         DriveMove setupForward = mechanumController.moveInDirection(4, UnitOfDistance.IN, 0, UnitOfAngle.DEGREES, "setupMove");
         DriveMove forward = mechanumController.moveInDirection(27.5-4, UnitOfDistance.IN, 0, UnitOfAngle.DEGREES, "forward");
@@ -82,19 +89,16 @@ public class GodrickTheParking extends LinearOpMode {
 
         ArrayList<DriveMove> leftPark = new ArrayList<>();
         leftPark.add(forward);
-        //leftPark.add(moveToCenter);
         leftPark.add(left);
         leftPark.add(secondForward);
 
         ArrayList<DriveMove> middlePark = new ArrayList<>();
         middlePark.add(forward);
-        //middlePark.add(moveToCenter);
         //middlePark.add(middle);
         middlePark.add(secondForward);
 
         ArrayList<DriveMove> rightPark = new ArrayList<>();
         rightPark.add(forward);
-        //rightPark.add(moveToCenter);
         rightPark.add(right);
         rightPark.add(secondForward);
 
@@ -141,11 +145,6 @@ public class GodrickTheParking extends LinearOpMode {
         runtime.reset();
 
         // Run autonomous
-        double startTime = this.time;
-        boolean searching = true;
-        int previousCheck = 0;
-        ArrayList<String> collectedLabels = new ArrayList<>();
-
         turnTable.setTargetPosition(UtilityKit.armDegreesToTicks(-45));
         turnTable.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
@@ -163,6 +162,7 @@ public class GodrickTheParking extends LinearOpMode {
             telemetry.addData("Setup: ", " Turning turnTable");
         }
 
+<<<<<<< HEAD
         // Find parking then set sequence
         while (opModeIsActive() && searching) {
             telemetry.addData("Setup: ", " Searching for object");
@@ -217,6 +217,18 @@ public class GodrickTheParking extends LinearOpMode {
             currentSequence = rightPark;
         } else {
             currentSequence = middlePark;
+=======
+        double waitTime = runtime.seconds()+2.5;
+        while (runtime.seconds() < waitTime) {
+            target = eldenParkingSpotWebcam.getParkingSpot();
+        }
+
+        ArrayList<DriveMove> currentSequence = new ArrayList<>();
+        switch (target) {
+            case PARK1: currentSequence = leftPark; break;
+            case PARK2: currentSequence = middlePark; break;
+            case PARK3: currentSequence = rightPark; break;
+>>>>>>> origin/EldenParking-v2
         }
 
         // create sequence variables
@@ -230,10 +242,10 @@ public class GodrickTheParking extends LinearOpMode {
         int backLeftTicks = 0;
 
         // set position tolerance
-        frontLeftDriveMotor.setTargetPositionTolerance(10);
-        frontRightDriveMotor.setTargetPositionTolerance(10);
-        backRightDriveMotor.setTargetPositionTolerance(10);
-        backLeftDriveMotor.setTargetPositionTolerance(10);
+        frontLeftDriveMotor.setTargetPositionTolerance(5);
+        frontRightDriveMotor.setTargetPositionTolerance(5);
+        backRightDriveMotor.setTargetPositionTolerance(5);
+        backLeftDriveMotor.setTargetPositionTolerance(5);
 
         // Run required drive sequence
         while (opModeIsActive()) {
@@ -281,61 +293,5 @@ public class GodrickTheParking extends LinearOpMode {
             telemetry.addData("Arrival: ", arrival);
             telemetry.update();
         }
-    }
-
-    private String mostCommonLabel(ArrayList<String> list) {
-        String mostCommon = "NO LABELS";
-        int maxCount = 0;
-
-        for (int i = 0; i < list.size(); i++) {
-            int count = 0;
-
-            for (int j = 0; j < list.size(); j++) {
-                if (list.get(i) == list.get(j)) {
-                    count++;
-                }
-            }
-
-            if (count > maxCount) {
-                maxCount = count;
-                mostCommon = list.get(i);
-            }
-        }
-
-        return mostCommon;
-    }
-
-    /**
-     * Initialize the Vuforia localization engine.
-     */
-    private void initVuforia() {
-        /*
-         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
-         */
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
-
-        parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam1");
-
-        //  Instantiate the Vuforia engine
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
-    }
-
-    /**
-     * Initialize the TensorFlow Object Detection engine.
-     */
-    private void initTfod() {
-        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
-                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfodParameters.minResultConfidence = 0.75f;
-        tfodParameters.isModelTensorFlow2 = true;
-        tfodParameters.inputSize = 300;
-        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
-
-        // Use loadModelFromAsset() if the TF Model is built in as an asset by Android Studio
-        // Use loadModelFromFile() if you have downloaded a custom team model to the Robot Controller's FLASH.
-        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
-        // tfod.loadModelFromFile(TFOD_MODEL_FILE, LABELS);
     }
 }

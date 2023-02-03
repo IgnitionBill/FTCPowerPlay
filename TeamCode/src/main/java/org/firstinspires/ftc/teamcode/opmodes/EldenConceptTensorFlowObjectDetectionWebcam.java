@@ -29,6 +29,9 @@
 
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import android.content.Context;
+
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -37,6 +40,8 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.firstinspires.ftc.teamcode.CameraWrapper;
+import org.firstinspires.ftc.teamcode.system.CameraD405;
 
 import java.util.List;
 
@@ -50,9 +55,9 @@ import java.util.List;
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-@TeleOp(name = "Concept: TensorFlow Object Detection Webcam", group = "Concept")
-//@Disabled
-public class ConceptTensorFlowObjectDetectionWebcam extends LinearOpMode {
+@TeleOp(name = "Concept: Elden TensorFlow Object Detection Webcam", group = "Concept")
+@Disabled
+public class EldenConceptTensorFlowObjectDetectionWebcam extends LinearOpMode {
 
     /*
      * Specify the source for the Tensor Flow Model.
@@ -61,14 +66,18 @@ public class ConceptTensorFlowObjectDetectionWebcam extends LinearOpMode {
      * has been downloaded to the Robot Controller's SD FLASH memory, it must to be loaded using loadModelFromFile()
      * Here we assume it's an Asset.    Also see method initTfod() below .
      */
+<<<<<<< HEAD:TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/ConceptTensorFlowObjectDetectionWebcam.java
     private static final String TFOD_MODEL_ASSET = "GOOSE2.tflite";
     // private static final String TFOD_MODEL_FILE  = "/sdcard/FIRST/tflitemodels/CustomTeamModel.tflite";
 
+=======
+    private static final String TFOD_MODEL_ASSET = "PowerPlayEldenParkLeague-v1.tflite";
+>>>>>>> origin/EldenParking-v2:TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/EldenConceptTensorFlowObjectDetectionWebcam.java
 
     private static final String[] LABELS = {
-            "DuckOne",
-            "DuckTwo",
-            "DuckThree"
+            "1p",
+            "2p",
+            "3p"
     };
 
     /*
@@ -167,10 +176,12 @@ public class ConceptTensorFlowObjectDetectionWebcam extends LinearOpMode {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam1");
+        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
 
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
+
+        telemetry.addData("Status", "Initialized");
     }
 
     /**

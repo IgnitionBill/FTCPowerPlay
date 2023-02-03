@@ -1,9 +1,15 @@
-## NOTICE
+# FTC Dashboard
 
 This repository contains the public FTC SDK for the POWERPLAY (2022-2023) competition season.
 
-## Welcome!
-This GitHub repository contains the source code that is used to build an Android app to control a *FIRST* Tech Challenge competition robot.  To use this SDK, download/clone the entire project to your local computer.
+* Telemetry with plots and field graphics
+* Live configuration variables
+* Camera streaming
+* Limited op mode controls and gamepad support
+
+Check out our [online documentation](https://acmerobotics.github.io/ftc-dashboard).
+
+![Dashboard Screenshot](docs/images/dashboard.png)
 
 ## Getting Started
 If you are new to robotics or new to the *FIRST* Tech Challenge, then you should consider reviewing the [FTC Blocks Tutorial](https://ftc-docs.firstinspires.org/programming_resources/blocks/Blocks-Tutorial.html) to get familiar with how to use the control system:
@@ -1319,3 +1325,4 @@ Changes include:
  * The API for the Legacy Module and Core Device Interface Module have been updated.
    - Support for encoders with the Legacy Module is now working.
  * The hardware loop has been updated for better performance.
+>>>>>>> ftcrobotcontroller-powerplay/master
