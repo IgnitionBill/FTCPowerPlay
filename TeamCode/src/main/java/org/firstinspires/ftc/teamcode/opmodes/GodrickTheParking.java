@@ -6,78 +6,27 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
-import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.teamcode.drivetrain.DriveMove;
 import org.firstinspires.ftc.teamcode.drivetrain.MechanumController;
-<<<<<<< HEAD
-import org.firstinspires.ftc.teamcode.system.Godrick;
-=======
 import org.firstinspires.ftc.teamcode.system.EldenParkingSpotWebcam;
->>>>>>> origin/EldenParking-v2
-import org.firstinspires.ftc.teamcode.system.Sensors;
 import org.firstinspires.ftc.teamcode.util.ParkingEnum;
 import org.firstinspires.ftc.teamcode.util.UnitOfAngle;
 import org.firstinspires.ftc.teamcode.util.UnitOfDistance;
 import org.firstinspires.ftc.teamcode.util.UtilityKit;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @Autonomous(name = "GodrickTheParking", group = "Auto")
 public class GodrickTheParking extends LinearOpMode {
 
     // Create general variables
     private ElapsedTime runtime = new ElapsedTime();
-<<<<<<< HEAD
-    Godrick godrick = new Godrick();
-
-    private static final String TFOD_MODEL_ASSET = "GOOSE2.tflite";
-
-    private static final String[] LABELS = {
-            "One",
-            "Three",
-            "Two"
-    };
-
-    private static final String VUFORIA_KEY =
-            "ARxtv8D/////AAABmZ4ts8AsuUsfv570CA0FvZY2KnfvNO/V97gOg+9/vwscYSkdGKDVInMDgmTdCEI2e8l96txPXrBEK8uLhdOrPHdG4KePbI++PmIY30U7WO62l9+6kVQiW1Dqkc/ddlh9X4RkOGiadErsSDHFuE8sea4IieU+42L9BnIWJIvm9FeoMIpakxvy/e3TnHks4ZbKVkdImRnScYAX3X34Z3FknB6K6LfXwpk2MdDGQuFrZh/2M7u84uzDfSXt+Ltpv+VGO1+yxWu/+6rpzSp/sE3OrIF48kmwwRLCh8ixInK4S0R4f1vAFpgN2MI+h20H50j/Zp2c2ppY52Dzpq2Mk+f9JiWo90003D9syuWyCsxKzPUV";
-
-    private VuforiaLocalizer vuforia;
-
-    private TFObjectDetector tfod;
-
-    public void runOpMode() throws InterruptedException {
-        godrick.initialize(hardwareMap, gamepad1, telemetry);
-        Sensors sensors = new Sensors();
-        sensors.initialize(godrick);
-
-        initVuforia();
-       // initTfod();
-
-        if (tfod != null) {
-            tfod.activate();
-
-            // The TensorFlow software will scale the input images from the camera to a lower resolution.
-            // This can result in lower detection accuracy at longer distances (> 55cm or 22").
-            // If your target is at distance greater than 50 cm (20") you can increase the magnification value
-            // to artificially zoom in to the center of image.  For best results, the "aspectRatio" argument
-            // should be set to the value of the images used to create the TensorFlow Object Detection model
-            // (typically 16/9).
-            tfod.setZoom(1.0, 16.0/9.0);
-        }
-=======
     EldenParkingSpotWebcam eldenParkingSpotWebcam;
     ParkingEnum target;
     public static final String webcam = "Webcam 1";
 
     public void runOpMode() throws InterruptedException {
         eldenParkingSpotWebcam = new EldenParkingSpotWebcam(telemetry, hardwareMap, runtime, webcam);
->>>>>>> origin/EldenParking-v2
 
         MechanumController mechanumController = new MechanumController();
 
@@ -162,62 +111,6 @@ public class GodrickTheParking extends LinearOpMode {
             telemetry.addData("Setup: ", " Turning turnTable");
         }
 
-<<<<<<< HEAD
-        // Find parking then set sequence
-        while (opModeIsActive() && searching) {
-            telemetry.addData("Setup: ", " Searching for object");
-
-            if (tfod != null) {
-                // getUpdatedRecognitions() will return null if no new information is available since
-                // the last time that call was made.
-                List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                if (updatedRecognitions != null) {
-                    telemetry.addData("# Objects Detected", updatedRecognitions.size());
-
-                    // step through the list of recognitions and display image position/size information for each one
-                    // Note: "Image number" refers to the randomized image orientation/number
-                    for (Recognition recognition : updatedRecognitions) {
-                        double col = (recognition.getLeft() + recognition.getRight()) / 2 ;
-                        double row = (recognition.getTop()  + recognition.getBottom()) / 2 ;
-                        double width  = Math.abs(recognition.getRight() - recognition.getLeft()) ;
-                        double height = Math.abs(recognition.getTop()  - recognition.getBottom()) ;
-
-                        telemetry.addData(""," ");
-                        telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100 );
-                        telemetry.addData("- Position (Row/Col)","%.0f / %.0f", row, col);
-                        telemetry.addData("- Size (Width/Height)","%.0f / %.0f", width, height);
-
-                        if (runtime.time(TimeUnit.SECONDS) > previousCheck) {
-                            collectedLabels.add(recognition.getLabel());
-                        }
-                    }
-
-                    telemetry.addData("Time: ", runtime.time(TimeUnit.SECONDS));
-                    telemetry.addData("Most common label: ", mostCommonLabel(collectedLabels));
-                    telemetry.update();
-                }
-            }
-
-            // when enough time has passed exit loop
-            if (runtime.time(TimeUnit.SECONDS) > 10) {
-                searching = false;
-            }
-        }
-
-        // find most common label
-        String commonLabel = mostCommonLabel(collectedLabels);
-        ArrayList<DriveMove> currentSequence;
-
-        // set sequence to correspond to the label
-        if (commonLabel == LABELS[0]) {
-            currentSequence = leftPark;
-        } else if (commonLabel == LABELS[2]) {
-            currentSequence = middlePark;
-        } else if (commonLabel == LABELS[1]) {
-            currentSequence = rightPark;
-        } else {
-            currentSequence = middlePark;
-=======
         double waitTime = runtime.seconds()+2.5;
         while (runtime.seconds() < waitTime) {
             target = eldenParkingSpotWebcam.getParkingSpot();
@@ -228,7 +121,6 @@ public class GodrickTheParking extends LinearOpMode {
             case PARK1: currentSequence = leftPark; break;
             case PARK2: currentSequence = middlePark; break;
             case PARK3: currentSequence = rightPark; break;
->>>>>>> origin/EldenParking-v2
         }
 
         // create sequence variables

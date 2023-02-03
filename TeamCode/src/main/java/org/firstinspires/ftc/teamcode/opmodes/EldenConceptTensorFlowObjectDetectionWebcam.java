@@ -35,6 +35,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcontroller.external.samples.ConceptTensorFlowObjectDetectionWebcam;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
@@ -66,13 +67,7 @@ public class EldenConceptTensorFlowObjectDetectionWebcam extends LinearOpMode {
      * has been downloaded to the Robot Controller's SD FLASH memory, it must to be loaded using loadModelFromFile()
      * Here we assume it's an Asset.    Also see method initTfod() below .
      */
-<<<<<<< HEAD:TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/ConceptTensorFlowObjectDetectionWebcam.java
-    private static final String TFOD_MODEL_ASSET = "GOOSE2.tflite";
-    // private static final String TFOD_MODEL_FILE  = "/sdcard/FIRST/tflitemodels/CustomTeamModel.tflite";
-
-=======
     private static final String TFOD_MODEL_ASSET = "PowerPlayEldenParkLeague-v1.tflite";
->>>>>>> origin/EldenParking-v2:TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/EldenConceptTensorFlowObjectDetectionWebcam.java
 
     private static final String[] LABELS = {
             "1p",

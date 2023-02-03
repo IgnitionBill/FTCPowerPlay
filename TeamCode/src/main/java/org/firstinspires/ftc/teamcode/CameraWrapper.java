@@ -120,9 +120,8 @@ public class CameraWrapper implements WebcamName {
 
     private native double[] scanForConeJNI();
 
-<<<<<<< HEAD
     private native double[] scanForPoleJNI();
-=======
+
     @NonNull
     @Override
     public SerialNumber getSerialNumber() {
@@ -204,5 +203,5 @@ public class CameraWrapper implements WebcamName {
     public CameraCharacteristics getCameraCharacteristics() {
         return null;
     }
->>>>>>> origin/EldenParking-v2
+
 }
