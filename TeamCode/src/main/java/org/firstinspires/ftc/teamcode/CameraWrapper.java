@@ -4,12 +4,21 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.intel.realsense.librealsense.DeviceListener;
 import com.intel.realsense.librealsense.RsContext;
+import com.qualcomm.robotcore.util.SerialNumber;
 
+import org.firstinspires.ftc.robotcore.external.function.Consumer;
+import org.firstinspires.ftc.robotcore.external.function.Continuation;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraCharacteristics;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.internal.system.Deadline;
 import org.firstinspires.ftc.teamcode.util.Vector3D;
 
-public class CameraWrapper {
+public class CameraWrapper implements WebcamName {
     private boolean cameraEnabled = true;
 
     private RsContext mRsContext;
@@ -104,4 +113,86 @@ public class CameraWrapper {
 //    public static native Vector3D vectorToCone();
 
     private native double[] scanForConeJNI();
+
+    @NonNull
+    @Override
+    public SerialNumber getSerialNumber() {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public String getUsbDeviceNameIfAttached() {
+        return "D405";
+    }
+
+    @Override
+    public boolean isAttached() {
+        return false;
+    }
+
+    @Override
+    public Manufacturer getManufacturer() {
+        return null;
+    }
+
+    @Override
+    public String getDeviceName() {
+        return "D405";
+    }
+
+    @Override
+    public String getConnectionInfo() {
+        return null;
+    }
+
+    @Override
+    public int getVersion() {
+        return 0;
+    }
+
+    @Override
+    public void resetDeviceConfigurationForOpMode() {
+
+    }
+
+    @Override
+    public void close() {
+
+    }
+
+    @Override
+    public boolean isWebcam() {
+        return false;
+    }
+
+    @Override
+    public boolean isCameraDirection() {
+        return false;
+    }
+
+    @Override
+    public boolean isSwitchable() {
+        return false;
+    }
+
+    @Override
+    public boolean isUnknown() {
+        return false;
+    }
+
+    @Override
+    public void asyncRequestCameraPermission(Context context, Deadline deadline, Continuation<? extends Consumer<Boolean>> continuation) {
+
+    }
+
+    @Override
+    public boolean requestCameraPermission(Deadline deadline) {
+        return false;
+    }
+
+    @Override
+    public CameraCharacteristics getCameraCharacteristics() {
+        return null;
+    }
 }

@@ -186,6 +186,7 @@ public class GodrickTheParking extends LinearOpMode {
 
                         if (runtime.time(TimeUnit.SECONDS) > previousCheck) {
                             collectedLabels.add(recognition.getLabel());
+
                         }
                     }
 

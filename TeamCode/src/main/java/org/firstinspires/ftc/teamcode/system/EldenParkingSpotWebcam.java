@@ -27,32 +27,35 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.opmodes;
+package org.firstinspires.ftc.teamcode.system;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.firstinspires.ftc.teamcode.util.ParkingEnum;
+import org.firstinspires.ftc.teamcode.util.ParkingSpot;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This 2022-2023 OpMode illustrates the basics of using the TensorFlow Object Detection API to
  * determine which image is being presented to the robot.
- *
+ * <p>
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
- *
+ * <p>
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-@TeleOp(name = "Concept: TensorFlow Object Detection Webcam", group = "Concept")
-//@Disabled
-public class ConceptTensorFlowObjectDetectionWebcam extends LinearOpMode {
+public class EldenParkingSpotWebcam implements ParkingSpot {
 
     /*
      * Specify the source for the Tensor Flow Model.
@@ -61,14 +64,12 @@ public class ConceptTensorFlowObjectDetectionWebcam extends LinearOpMode {
      * has been downloaded to the Robot Controller's SD FLASH memory, it must to be loaded using loadModelFromFile()
      * Here we assume it's an Asset.    Also see method initTfod() below .
      */
-    private static final String TFOD_MODEL_ASSET = "PowerPlayConeReader5.tflite";
-    // private static final String TFOD_MODEL_FILE  = "/sdcard/FIRST/tflitemodels/CustomTeamModel.tflite";
-
+    private static final String TFOD_MODEL_ASSET = "PowerPlayEldenParkLeague-v1.tflite";
 
     private static final String[] LABELS = {
-            "DuckOne",
-            "DuckTwo",
-            "DuckThree"
+            "1p",
+            "2p",
+            "3p"
     };
 
     /*
@@ -98,12 +99,29 @@ public class ConceptTensorFlowObjectDetectionWebcam extends LinearOpMode {
      */
     private TFObjectDetector tfod;
 
-    @Override
-    public void runOpMode() {
+    // FTC RobotController Supporting Info
+    private Telemetry telemetry;
+    private HardwareMap hardwareMap;
+    private ArrayList<String> collectedLabels = new ArrayList<>();
+    private ElapsedTime runtime = new ElapsedTime();
+    private long previousCheck;
+    private ParkingEnum designatedParkingSpot;
+
+    public EldenParkingSpotWebcam(Telemetry telemetry, HardwareMap hardwareMap) {
+        initWebcam(telemetry, hardwareMap);
+    }
+
+    private void initWebcam(Telemetry telemetry, HardwareMap hardwareMap) {
+
+        this.telemetry = telemetry;
+        this.hardwareMap = hardwareMap;
+
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
         // first.
         initVuforia();
         initTfod();
+        runtime.reset();
+        previousCheck = 0;
 
         /**
          * Activate TensorFlow Object Detection before we wait for the start command.
@@ -118,40 +136,7 @@ public class ConceptTensorFlowObjectDetectionWebcam extends LinearOpMode {
             // to artificially zoom in to the center of image.  For best results, the "aspectRatio" argument
             // should be set to the value of the images used to create the TensorFlow Object Detection model
             // (typically 16/9).
-            tfod.setZoom(1.0, 16.0/9.0);
-        }
-
-        /** Wait for the game to begin */
-        telemetry.addData(">", "Press Play to start op mode");
-        telemetry.update();
-        waitForStart();
-
-        if (opModeIsActive()) {
-            while (opModeIsActive()) {
-                if (tfod != null) {
-                    // getUpdatedRecognitions() will return null if no new information is available since
-                    // the last time that call was made.
-                    List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                    if (updatedRecognitions != null) {
-                        telemetry.addData("# Objects Detected", updatedRecognitions.size());
-
-                        // step through the list of recognitions and display image position/size information for each one
-                        // Note: "Image number" refers to the randomized image orientation/number
-                        for (Recognition recognition : updatedRecognitions) {
-                            double col = (recognition.getLeft() + recognition.getRight()) / 2 ;
-                            double row = (recognition.getTop()  + recognition.getBottom()) / 2 ;
-                            double width  = Math.abs(recognition.getRight() - recognition.getLeft()) ;
-                            double height = Math.abs(recognition.getTop()  - recognition.getBottom()) ;
-
-                            telemetry.addData(""," ");
-                            telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100 );
-                            telemetry.addData("- Position (Row/Col)","%.0f / %.0f", row, col);
-                            telemetry.addData("- Size (Width/Height)","%.0f / %.0f", width, height);
-                        }
-                        telemetry.update();
-                    }
-                }
-            }
+            tfod.setZoom(1.0, 16.0 / 9.0);
         }
     }
 
@@ -165,10 +150,12 @@ public class ConceptTensorFlowObjectDetectionWebcam extends LinearOpMode {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam1");
+        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
 
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
+
+        telemetry.addData("Status", "Initialized");
     }
 
     /**
@@ -176,7 +163,7 @@ public class ConceptTensorFlowObjectDetectionWebcam extends LinearOpMode {
      */
     private void initTfod() {
         int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
-            "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
         tfodParameters.minResultConfidence = 0.75f;
         tfodParameters.isModelTensorFlow2 = true;
@@ -187,5 +174,74 @@ public class ConceptTensorFlowObjectDetectionWebcam extends LinearOpMode {
         // Use loadModelFromFile() if you have downloaded a custom team model to the Robot Controller's FLASH.
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
         // tfod.loadModelFromFile(TFOD_MODEL_FILE, LABELS);
+    }
+
+    /**
+     * Figure out the most common Tfod label.
+     */
+    private String mostCommonLabel(ArrayList<String> list) {
+        String mostCommon = "NO LABELS";
+        int maxCount = 0;
+
+        for (int i = 0; i < list.size(); i++) {
+            int count = 0;
+
+            for (int j = 0; j < list.size(); j++) {
+                if (list.get(i) == list.get(j)) {
+                    count++;
+                }
+            }
+
+            if (count > maxCount) {
+                maxCount = count;
+                mostCommon = list.get(i);
+            }
+        }
+
+        return mostCommon;
+    }
+
+    @Override
+    public ParkingEnum getParkingSpot() {
+        //        TODO: Return the most common label detected
+        if (tfod != null) {
+            // getUpdatedRecognitions() will return null if no new information is available since
+            // the last time that call was made.
+            List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+            if (updatedRecognitions != null) {
+                telemetry.addData("# Objects Detected", updatedRecognitions.size());
+
+                // step through the list of recognitions and display image position/size information for each one
+                // Note: "Image number" refers to the randomized image orientation/number
+                for (Recognition recognition : updatedRecognitions) {
+                    double col = (recognition.getLeft() + recognition.getRight()) / 2;
+                    double row = (recognition.getTop() + recognition.getBottom()) / 2;
+                    double width = Math.abs(recognition.getRight() - recognition.getLeft());
+                    double height = Math.abs(recognition.getTop() - recognition.getBottom());
+
+                    telemetry.addData("", " ");
+                    telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
+                    telemetry.addData("- Position (Row/Col)", "%.0f / %.0f", row, col);
+                    telemetry.addData("- Size (Width/Height)", "%.0f / %.0f", width, height);
+
+                    if (runtime.time(TimeUnit.SECONDS) > previousCheck) {
+                        previousCheck = runtime.time(TimeUnit.SECONDS);
+                        collectedLabels.add(recognition.getLabel());
+                    }
+                    telemetry.update();
+                }
+            }
+        }
+        if (!collectedLabels.isEmpty()) {
+            String label = mostCommonLabel(collectedLabels);
+            if (label.equalsIgnoreCase(ParkingEnum.PARK1.getLabel()))
+                designatedParkingSpot = ParkingEnum.PARK1;
+            else if (label.equalsIgnoreCase(ParkingEnum.PARK3.getLabel()))
+                designatedParkingSpot = ParkingEnum.PARK3;
+            else designatedParkingSpot = ParkingEnum.PARK2;
+        } else
+            // Defaults to PARK2;
+            designatedParkingSpot = ParkingEnum.PARK2;
+        return designatedParkingSpot;
     }
 }
