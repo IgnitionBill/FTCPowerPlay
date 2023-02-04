@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.drivetrain.DriveMove;
 import org.firstinspires.ftc.teamcode.drivetrain.MechanumController;
 import org.firstinspires.ftc.teamcode.system.EldenParkingSpotWebcam;
+import org.firstinspires.ftc.teamcode.system.Godrick;
 import org.firstinspires.ftc.teamcode.util.ParkingEnum;
 import org.firstinspires.ftc.teamcode.util.UnitOfAngle;
 import org.firstinspires.ftc.teamcode.util.UnitOfDistance;
@@ -24,40 +25,43 @@ public class GodrickTheParking extends LinearOpMode {
     EldenParkingSpotWebcam eldenParkingSpotWebcam;
     ParkingEnum target;
     public static final String webcam = "Webcam 1";
+    Godrick godrick = new Godrick();
 
     public void runOpMode() throws InterruptedException {
         eldenParkingSpotWebcam = new EldenParkingSpotWebcam(telemetry, hardwareMap, runtime, webcam);
+
+        godrick.initialize(hardwareMap, gamepad1, telemetry);
 
         MechanumController mechanumController = new MechanumController();
 
         DriveMove setupForward = mechanumController.moveInDirection(4, UnitOfDistance.IN, 0, UnitOfAngle.DEGREES, "setupMove");
         DriveMove forward = mechanumController.moveInDirection(27.5-4, UnitOfDistance.IN, 0, UnitOfAngle.DEGREES, "forward");
         DriveMove secondForward = mechanumController.moveInDirection(12, UnitOfDistance.IN, 0, UnitOfAngle.DEGREES, "secondForward");
-        DriveMove left = mechanumController.moveInDirection(27, UnitOfDistance.IN, -90, UnitOfAngle.DEGREES, "left");
-        DriveMove right = mechanumController.moveInDirection(27, UnitOfDistance.IN, 90, UnitOfAngle.DEGREES, "right");
+        DriveMove left = mechanumController.moveInDirection(28, UnitOfDistance.IN, -90, UnitOfAngle.DEGREES, "left");
+        DriveMove right = mechanumController.moveInDirection(28, UnitOfDistance.IN, 90, UnitOfAngle.DEGREES, "right");
 
         ArrayList<DriveMove> leftPark = new ArrayList<>();
         leftPark.add(forward);
         leftPark.add(left);
-        leftPark.add(secondForward);
+        //leftPark.add(secondForward);
 
         ArrayList<DriveMove> middlePark = new ArrayList<>();
         middlePark.add(forward);
         //middlePark.add(middle);
-        middlePark.add(secondForward);
+        //middlePark.add(secondForward);
 
         ArrayList<DriveMove> rightPark = new ArrayList<>();
         rightPark.add(forward);
         rightPark.add(right);
-        rightPark.add(secondForward);
+        //rightPark.add(secondForward);
 
         // Initialize
-        DcMotorEx frontLeftDriveMotor = (DcMotorEx) this.hardwareMap.dcMotor.get("frontLeft");
-        DcMotorEx backLeftDriveMotor = (DcMotorEx) this.hardwareMap.dcMotor.get("backLeft");
-        DcMotorEx frontRightDriveMotor = (DcMotorEx) this.hardwareMap.dcMotor.get("frontRight");
-        DcMotorEx backRightDriveMotor = (DcMotorEx) this.hardwareMap.dcMotor.get("backRight");
+        DcMotorEx frontLeftDriveMotor = godrick.actuators.frontLeft;
+        DcMotorEx backLeftDriveMotor = godrick.actuators.backLeft;
+        DcMotorEx frontRightDriveMotor = godrick.actuators.frontRight;
+        DcMotorEx backRightDriveMotor = godrick.actuators.backRight;
 
-        DcMotorEx turnTable = (DcMotorEx) this.hardwareMap.dcMotor.get("turnTable");
+        DcMotorEx turnTable = godrick.actuators.turnTable;
 
         // Correct motor directions
         frontLeftDriveMotor.setDirection(DcMotor.Direction.REVERSE);

@@ -68,11 +68,17 @@ public class MechanumController {
         double magnitude = Math.sqrt(xL*xL + yL*yL + xR*xR);
 
         // add the vector components, rescaled to a maximum of the magnitude given
-        if(magnitude > .001) {
+        if (magnitude > .9) {
             frontLeft = -(-yL + xL + xR);//magnitude;
             frontRight = (-yL - xL - xR);//magnitude;
             backRight = (-yL + xL - xR);//magnitude;
             backLeft = -(-yL - xL + xR);//magnitude;
+        }
+        else if(magnitude > .001) {
+            frontLeft = -(-yL + xL + xR)/2;//magnitude;
+            frontRight = (-yL - xL - xR)/2;//magnitude;
+            backRight = (-yL + xL - xR)/2;//magnitude;
+            backLeft = -(-yL - xL + xR)/2;//magnitude;
         }
         else{
             frontLeft = 0.0;

@@ -113,20 +113,27 @@ public class ArmController {
         }
         if(gamePadState.dPadUp){
             // move the arm forward
-            godrick.arm.baseJoint.incrementTargetAngle(1.0);
+            godrick.arm.baseJoint.setTargetAngle(godrick.arm.baseJoint.getAngleDeg()+8);
         }
         if(gamePadState.dPadDown){
             // move the arm back
-            godrick.arm.baseJoint.incrementTargetAngle(-1.0);
+            godrick.arm.baseJoint.setTargetAngle(godrick.arm.baseJoint.getAngleDeg()-8);;
         }
         if(gamePadState.y){
             // move seg 2 forward
-            godrick.arm.elbowJoint.incrementTargetAngle(-1.0);
+            godrick.arm.elbowJoint.setTargetAngle(godrick.arm.elbowJoint.getAngleDeg()+8);
         }
         if(gamePadState.a){
             // move seg 2 back
-            godrick.arm.elbowJoint.incrementTargetAngle(1.0);
+            godrick.arm.elbowJoint.setTargetAngle(godrick.arm.elbowJoint.getAngleDeg()-8);;
         }
+        if (gamePadState.b) {
+            godrick.arm.grabberGrip = 150;
+        }
+        else {
+            godrick.arm.grabberGrip = -150;
+        }
+        godrick.arm.grabberPitch = 80 - godrick.arm.baseJoint.getAngleDeg() - godrick.arm.elbowJoint.getAngleDeg();
     }
 
     private void godrickTakesItEasy(){
