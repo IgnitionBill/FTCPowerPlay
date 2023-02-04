@@ -148,6 +148,8 @@ public class Actuators {
         baseSegment2.setTargetPosition(godrick.arm.baseJoint.getTargetTicks());
         lowerSegment.setTargetPosition(godrick.arm.elbowJoint.getTargetTicks());
 
+        //lowerSegment.setVelocity(10.0); // test low speed ticks, made it fail to move at all
+
         if (turnTable.isBusy()) {
             turnTable.setPower(1);
         }

@@ -32,7 +32,7 @@ public class CylindricalVector3D {
     }
 
     public static CylindricalVector3D toCylindrical(Vector3D v){
-        return new CylindricalVector3D(Math.sqrt(v.x*v.x + v.y*v.y), Math.toDegrees(Math.atan2(v.x, v.y)), v.z);
+        return new CylindricalVector3D(Math.sqrt(v.x*v.x + v.y*v.y), Math.toDegrees(Math.atan2(v.y, v.x)), v.z);
     }
 
     /**

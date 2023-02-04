@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.arm;
 
+import android.util.Log;
+
 import org.firstinspires.ftc.teamcode.util.CylindricalVector3D;
 import org.firstinspires.ftc.teamcode.util.Vector3D;
 
@@ -32,7 +34,7 @@ public class ArmPoseGenerator {
     }
 
     public static ArmPose coneRead(ArmPose last) {
-        return new ArmPose(last.th0, -10.0, 160.0, 0.0, 0.0, -90.0, grabberClose);
+        return new ArmPose(last.th0, 10.0, 160.0, 0.0, 0.0, -80.0, grabberClose);
     }
 
     // joint 1 tilts back to assist joint 2 in the next phase
@@ -40,11 +42,14 @@ public class ArmPoseGenerator {
         return new ArmPose(last.th0, -70.0, 90.0, 0.0, 0.0, 0.0, grabberClose);
     }
 
+    // target vector is assumed to be x=forward, y=left, z=up, relative to the turntable of the robot
     public static ArmPose rotateTo(Vector3D target, ArmPose last) {
-        CylindricalVector3D cylTarget = CylindricalVector3D.toCylindrical(target);
+        //CylindricalVector3D cylTarget = CylindricalVector3D.toCylindrical(target);
+
+        double theta =  Math.toDegrees( Math.atan2(target.y, target.x) );
 
         double th0, th1, th2, th3, th4, th5, th6;
-        th0 = cylTarget.theta + last.th0; // angle to the target
+        th0 = theta + last.th0; // angle to the target
         th1 = last.th1;
         th2 = last.th2;
         th3 = last.th3; // spin wrist
@@ -55,7 +60,6 @@ public class ArmPoseGenerator {
     }
 
     public static ArmPose rotateTo(double angle, ArmPose last) {
-
         return new ArmPose(angle, last.th1, last.th2, last.th3, last.th4, last.th5, last.th6);
     }
 
@@ -74,7 +78,9 @@ public class ArmPoseGenerator {
     }
 
     public static ArmPose openGripAndMoveTo(Vector3D target, ArmPose last) {
-        CylindricalVector3D cylTarget = CylindricalVector3D.toCylindrical(target);
+       // CylindricalVector3D cylTarget = CylindricalVector3D.toCylindrical(target);
+        // assuming we already rotated toward the target, we just reach out x, and up z
+        CylindricalVector3D cylTarget = new CylindricalVector3D(target.x, 0.0, target.z);
         Vector3D angles = InverseKinematics.calculateAngles(cylTarget);
         double th0, th1, th2, th3, th4, th5, th6;
         th0 = cylTarget.theta + last.th0; // angle to the target
@@ -84,6 +90,8 @@ public class ArmPoseGenerator {
         th4 = 0; // yaw
         th5 = angles.z; // for a level gripper, in degrees -- soon to change to wrist flex
         th6 = grabberOpen; // grip
+        ArmPose p = new ArmPose(th0, th1, th2, th3, th4, th5, th6);
+        Log.e("ArmPoseGenerator: openGripAndMoveTo", "Pose: " + p.toString());
         return new ArmPose(th0, th1, th2, th3, th4, th5, th6);
     }
 }

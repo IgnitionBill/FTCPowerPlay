@@ -69,4 +69,8 @@ public class ArmPose {
     private boolean withinRange(double a, double b, double range){
         return a-b < range && b-a < range;
     }
+
+    public String toString(){
+        return "(th0: "+ th0 + " th1: " + th1 + " th2: " + th2 + " R: " + th3 + " Y: " + th4 + " P: " + th5 + " G: " + th6 + ")";
+    }
 }
