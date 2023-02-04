@@ -24,7 +24,7 @@ public class Arm {
     public final static double LCAM = 6.2; // length from joint 5 to camera face
     public final static double LGRIPZ = 8.0; // forward length from joint 5 to the center of the gripper
     public final static double LGRIPX = -9.0; // leftward distance from joint 5 to the center of the gripper
-    public final static double TABLE_HOME = 45;
+    public final static double TABLE_HOME = 40;
     public final static double BASE_HOME = -74;
     public final static double ELBOW_HOME = 165;
 

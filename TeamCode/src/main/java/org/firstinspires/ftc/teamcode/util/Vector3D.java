@@ -36,4 +36,8 @@ public class Vector3D {
     public Vector3D subtract(Vector3D v){
         return new Vector3D(-v.x + x, -v.y + y, -v.z + z);
     }
+
+    public String toString(){
+        return "(" + x + ", " + y + ", " + z + ")";
+    }
 }
